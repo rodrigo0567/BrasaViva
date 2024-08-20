@@ -9,14 +9,19 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mysql.cj.jdbc.Driver;
+
 public class BrasaVivaCRUD {
+	private static final String LOCALHOST = "jdbc:mysql://localhost:3306/churrascaria";
+	private static final String USER = "root";
+	Driver driver;
     private Connection connection;
 
     public BrasaVivaCRUD() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            this.connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/churrascaria_db", "root", "K22k22k4k2*");
+        	this.driver = new Driver();
+			DriverManager.registerDriver(driver);
+            this.connection = DriverManager.getConnection(LOCALHOST, USER, "");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -24,13 +29,14 @@ public class BrasaVivaCRUD {
 
     public void inserirCliente(Cliente cliente) {
         String sql = "INSERT INTO clientes (nome, cpf, email, telefone) VALUES (?, ?, ?, ?)";
-        try(PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try{
+        	PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getCpf());
             stmt.setString(3, cliente.getEmail());
             stmt.setString(4, cliente.getTelefone());
             stmt.executeUpdate();
-            System.out.println("Cliente inserido com sucesso!");
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -247,27 +253,44 @@ public class BrasaVivaCRUD {
         }
     }
 
-    public List<Cliente> listarTodosClientes() {
-        List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT * FROM clientes";
-
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+    public void listarTodosClientes() {
+    	String sql = "SELECT * FROM clientes";
+    	try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Cliente cliente = new Cliente(
-                        rs.getLong("id"),
-                        rs.getString("nome"),
-                        rs.getString("cpf"),
-                        rs.getString("email"),
-                        rs.getString("telefone")
-                );
-                clientes.add(cliente);
+            while (rs.next()){
+            	System.out.println("\n");
+            	System.out.println("ID: " + rs.getLong("id"));
+            	System.out.println("Nome: " + rs.getString("nome"));
+            	System.out.println("CPF: " + rs.getString("cpf"));
+            	System.out.println("Email: " + rs.getString("email"));
+            	System.out.println("Telefone: " + rs.getString("telefone"));    
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return clientes;
     }
+    
+//    public List<Cliente> listarTodosClientes() {
+//        List<Cliente> clientes = new ArrayList<>();
+//        String sql = "SELECT * FROM clientes";
+//
+//        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+//            ResultSet rs = stmt.executeQuery();
+//            while (rs.next()) {
+//                Cliente cliente = new Cliente(
+//                        rs.getLong("id"),
+//                        rs.getString("nome"),
+//                        rs.getString("cpf"),
+//                        rs.getString("email"),
+//                        rs.getString("telefone")
+//                );
+//                clientes.add(cliente);
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return clientes;
+//    }
 
     public List<Produto> listarTodosProdutos() {
         List<Produto> produtos = new ArrayList<>();

@@ -29,30 +29,31 @@ public class Main {
             switch (op) {
                 case 1:
                     //Cadastro de Cliente
-                    System.out.print("\nNome: ");
-                    String nome = sc.nextLine();
-
-                    String cpf;
-                    while (true) {
-                        System.out.println("CPF (apenas números): ");
-                        cpf = sc.nextLine().replaceAll("[^\\d]", "");
-                        if (cpf.length() == 11) {
-                            break;
-                        } else {
-                            System.out.println("CPF inválido. Deve conter 11 dígitos.");
-                        }
-                    }
-                    cpf = cpf.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
-
-                    System.out.print("Email: ");
-                    String email = sc.nextLine();
-                    System.out.print("Telefone: ");
-                    String telefone = sc.nextLine();
-
-                    Cliente novoCliente = new Cliente(null, nome, cpf, email, telefone);
-                    crud.inserirCliente(novoCliente);
-                    System.out.println("Cliente cadastrado com sucesso!");
-                    break;
+                	clienteLogado.cadastraCliente();
+//                    System.out.print("\nNome: ");
+//                    String nome = sc.nextLine();
+//
+//                    String cpf;
+//                    while (true) {
+//                        System.out.println("CPF (apenas números): ");
+//                        cpf = sc.nextLine().replaceAll("[^\\d]", "");
+//                        if (cpf.length() == 11) {
+//                            break;
+//                        } else {
+//                            System.out.println("CPF inválido. Deve conter 11 dígitos.");
+//                        }
+//                    }
+//                    cpf = cpf.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
+//
+//                    System.out.print("Email: ");
+//                    String email = sc.nextLine();
+//                    System.out.print("Telefone: ");
+//                    String telefone = sc.nextLine();
+//
+//                    Cliente novoCliente = new Cliente(null, nome, cpf, email, telefone);
+//                    crud.inserirCliente(novoCliente);
+//                    System.out.println("Cliente cadastrado com sucesso!");
+//                    break;
 
                 case 2:
                     // Login do Cliente
@@ -211,15 +212,17 @@ public class Main {
                 case 3:
                     // Visualizar todos os clientes
                     System.out.println("\n--- Lista de Todos os Clientes ---");
-                    List<Cliente> todosClientes = crud.listarTodosClientes();
-                    for (Cliente cliente : todosClientes) {
-                        System.out.println("ID: " + cliente.getId() +
-                                "\nNome: " + cliente.getNome() +
-                                "\nCPF: " + cliente.getCpf() +
-                                "\nEmail: " + cliente.getEmail() +
-                                "\nTelefone: " + cliente.getTelefone());
-                        System.out.println("----------------------");
-                    }
+                    crud.listarTodosClientes();
+//                    List<Cliente> todosClientes = crud.listarTodosClientes();
+//                    for (Cliente cliente : todosClientes) {
+//                        System.out.println("ID: " + cliente.getId() +
+//                                "\nNome: " + cliente.getNome() +
+//                                "\nCPF: " + cliente.getCpf() +
+//                                "\nEmail: " + cliente.getEmail() +
+//                                "\nTelefone: " + cliente.getTelefone());
+//                        System.out.println("----------------------");
+//                    }
+                    System.out.println("----------------------");
                     break;
 
                 case 4:

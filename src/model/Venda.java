@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Venda {
     private Long id;
     private Long idCliente;
+    private Long idVendedor;
     private List<ProdutoVenda> produtos;
     private Date dataVenda;
 
