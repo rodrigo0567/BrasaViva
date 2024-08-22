@@ -15,7 +15,7 @@ public class Main {
         AreaAtendente areaAtendente = new AreaAtendente();
 
         while (true) {
-            System.out.println("BRASA VIVA CHURRASCARIA");
+            System.out.println("\nBRASA VIVA CHURRASCARIA");
             System.out.println("\n--- Menu Inicial ---\n");
             System.out.println("1. Área do Gerente");
             System.out.println("2. Área do Atendente");
@@ -31,7 +31,6 @@ public class Main {
                 case 2:
                     areaAtendente.areaDoAtendente();
                     break;
-
                 case 3:
                     System.out.println("Saindo do sistema...");
                     sc.close();

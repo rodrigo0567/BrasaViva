@@ -9,7 +9,7 @@ public class AreaAtendente {
     private Scanner sc = new Scanner(System.in);
     private BrasaVivaCRUD crud = new BrasaVivaCRUD();
 
-    public void areaDoAtendente() {
+    public String areaDoAtendente() {
         while(true) {
             System.out.println("\n=*=*=* Área do Atendente =*=*=*\n");
             System.out.println("1. Cadastro de Cliente");
@@ -31,9 +31,7 @@ public class AreaAtendente {
                     visualizarCardapio();
                     break;
                 case 4:
-                    System.out.println("Saindo...");
-                    sc.close();
-                    return;
+                    return "Saindo...";
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
             }
