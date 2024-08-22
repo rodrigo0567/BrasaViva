@@ -27,7 +27,7 @@ public class BrasaVivaCRUD {
     }
 
     public void inserirCliente(Cliente cliente) {
-        String sql = "INSERT INTO clientes (nome, cpf, email, telefone) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO cliente (nome, cpf, email, telefone) VALUES (?, ?, ?, ?)";
         try{
         	PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, cliente.getNome());
@@ -53,7 +53,7 @@ public class BrasaVivaCRUD {
     }
 
     public void atualizarEstoque(Estoque estoque) {
-        String sql = "UPDATE estoque SET quantidade = ? WHERE id_produto = ?";
+        String sql = "UPDATE estoque SET quantidade_disponivel = quantidade_disponivel - ? WHERE id_produto = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, estoque.getQuantidadeDisponivel());
             stmt.setLong(2, estoque.getIdProduto());
@@ -191,7 +191,7 @@ public class BrasaVivaCRUD {
     }
 
     public void atualizarCliente(Cliente cliente) {
-        String sql = "UPDATE clientes SET nome = ?, cpf = ?, email = ?, telefone = ? WHERE id = ?";
+        String sql = "UPDATE cliente SET nome = ?, cpf = ?, email = ?, telefone = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getCpf());
@@ -210,11 +210,11 @@ public class BrasaVivaCRUD {
     }
 
     public void atualizarProduto(Produto produto) {
-        String sql = "UPDATE produtos SET nome = ?, preco = ? WHERE id = ?";
+        String sql = "UPDATE produto SET nome = ?, preco = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, produto.getNome());
-            stmt.setDouble(3, produto.getPreco());
-            stmt.setLong(4, produto.getId());
+            stmt.setDouble(2, produto.getPreco());
+            stmt.setLong(3, produto.getId());
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {
                 System.out.println("Produto atualizado com sucesso!");
@@ -225,10 +225,9 @@ public class BrasaVivaCRUD {
             e.printStackTrace();
         }
     }
-
     public List<Cliente> pesquisarClienteNome(String nome) {
         List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT * FROM clientes WHERE nome LIKE ?";
+        String sql = "SELECT * FROM cliente WHERE nome LIKE ?";
 
         try(PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, "%" + nome + "%");
@@ -256,7 +255,7 @@ public class BrasaVivaCRUD {
         List<Cliente> clientesEncontrados = new ArrayList<>();
 
         try {
-            String sql = "SELECT * FROM clientes WHERE REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), ' ', '') = ?";
+            String sql = "SELECT * FROM cliente WHERE REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), ' ', '') = ?";
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, cpfNumerico);
 
@@ -329,7 +328,7 @@ public class BrasaVivaCRUD {
     }
 
     public void removerProduto(Long id) {
-        String sql = "DELETE FROM produtos WHERE id = ?";
+        String sql = "DELETE FROM produto WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, id);
             int rowsDeleted = stmt.executeUpdate();
@@ -384,7 +383,7 @@ public class BrasaVivaCRUD {
 
     public List<Produto> listarTodosProdutos() {
         List<Produto> produtos = new ArrayList<>();
-        String sql = "SELECT * FROM produtos";
+        String sql = "SELECT * FROM produto";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
@@ -425,7 +424,7 @@ public class BrasaVivaCRUD {
 
     public Produto exibirUmProduto(Long id) {
         Produto produto = null;
-        String sql = "SELECT * FROM produtos WHERE id = ?";
+        String sql = "SELECT * FROM produto WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, id);
             ResultSet rs = stmt.executeQuery();

@@ -239,7 +239,6 @@ public class ControleVenda {
 
         // Calcular o valor total da venda
         double valorTotal = venda.calcularValorTotal();
-        System.out.println("Preço Final do Pedido: R$ " + String.format("%.2f", valorTotal));
 
         // Solicitar forma de pagamento
         System.out.println("Escolha a forma de pagamento:");
