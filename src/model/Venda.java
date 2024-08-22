@@ -8,9 +8,9 @@ import java.util.ArrayList;
 public class Venda {
     private Long id;
     private Long idCliente;
-    private Long idVendedor;
-    private List<ProdutoVenda> produtos;
-    private Date dataVenda;
+    private Long idAtendente;
+    private final List<ProdutoVenda> produtos;
+    private final Date dataVenda;
 
     public Venda() {
         this.produtos = new ArrayList<>();
@@ -19,8 +19,10 @@ public class Venda {
 
     public Venda(Cliente cliente) {
         this();
+        if (cliente == null) {
+            throw new IllegalArgumentException("Cliente não pode ser nulo.");
+        }
         this.idCliente = cliente.getId();
-
     }
 
     public Long getId() {
@@ -39,44 +41,69 @@ public class Venda {
         this.idCliente = idCliente;
     }
 
+    public long getIdAtendente() {
+        return idAtendente;
+    }
+
+    public void setIdAtendente(Long idAtendente) {
+        this.idAtendente = idAtendente;
+    }
+
     public List<ProdutoVenda> getProdutos() {
-        return produtos;
+        return new ArrayList<>(produtos);
     }
 
     public void setProdutos(List<ProdutoVenda> produtos) {
-        this.produtos = produtos;
+        if (produtos == null) {
+            throw new IllegalArgumentException("Lista de produtos não pode ser nula.");
+        }
+        this.produtos.clear();
+        this.produtos.addAll(produtos);
     }
 
     public Date getDataVenda() {
-        return dataVenda;
-    }
-
-    public void setDataVenda(Date dataVenda) {
-        this.dataVenda = dataVenda;
+        return new Date(dataVenda.getTime());
     }
 
     public void adicionarProduto(Produto produto, int quantidade) {
-        for (ProdutoVenda pv : produtos) {
-            if (pv.getProduto().getId().equals(produto.getId())) {
-                pv.setQuantidade(pv.getQuantidade() + quantidade);
-                return;
-            }
+        if (produto == null) {
+            throw new IllegalArgumentException("Produto não pode ser nulo.");
         }
-        produtos.add(new ProdutoVenda(produto, quantidade));
+        if (quantidade <= 0) {
+            throw new IllegalArgumentException("Quantidade deve ser maior que zero");
+        }
+
+        ProdutoVenda produtoVenda = encontrarProdutoNaVenda(produto.getId());
+        if (produtoVenda != null) {
+            produtoVenda.setQuantidade(produtoVenda.getQuantidade() + quantidade);
+        } else {
+            produtos.add(new ProdutoVenda(produto, quantidade));
+        }
     }
 
-    public boolean removerProduto(Long idProduto, int quantidade) {
+    public boolean alterarQuantidadeProduto(long idProduto, int quantidadeAlterar) {
         for (ProdutoVenda pv : produtos) {
-            if (pv.getProduto().getId().equals(idProduto)) {
-                if (quantidade >= pv.getQuantidade()) {
+            if (pv.getProduto().getId() == idProduto) {
+                int novaQuantidade = quantidadeAlterar + pv.getQuantidade();
+                if (novaQuantidade < 0) {
+                    System.out.println("A quantidade não pode ser negativa!");
+                    return false;
+                }
+                if (novaQuantidade == 0) {
                     produtos.remove(pv);
                 } else {
-                    pv.setQuantidade(pv.getQuantidade() - quantidade);
+                    pv.setQuantidade(novaQuantidade);
                 }
                 return true;
             }
+
         }
-        return false;
+        return false; // não foram econtrados produtos;
+    }
+
+
+    public void removerProduto(Long idProduto) {
+        produtos.removeIf(pv -> pv.getProduto().getId() == idProduto);
     }
 
     public double calcularValorTotal() {
@@ -87,6 +114,7 @@ public class Venda {
         return total;
     }
 
+    // Ao finalizar compra
     public void gerarComanda(Cliente cliente) {
         System.out.println("\n--- Comanda ---\n");
         System.out.println("Cliente Nome: " + cliente.getNome());
@@ -104,4 +132,15 @@ public class Venda {
         System.out.println("\nValor total: R$ " + valorTotal);
         System.out.println("===================");
     }
+
+    private ProdutoVenda encontrarProdutoNaVenda(Long idProduto) {
+        for (ProdutoVenda pv : produtos) {
+            if (pv.getProduto().getId().equals(idProduto)) {
+                return pv;
+            }
+        }
+        return null;
+    }
+
+
 }

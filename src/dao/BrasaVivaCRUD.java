@@ -12,8 +12,10 @@ import java.util.List;
 import com.mysql.cj.jdbc.Driver;
 
 public class BrasaVivaCRUD {
-	private static final String LOCALHOST = "jdbc:mysql://localhost:3306/churrascaria";
+	private static final String LOCALHOST = "jdbc:mysql://localhost:3306/churrascaria_db";
 	private static final String USER = "root";
+    private static final String PASSWORD = "K22k22k4k2*";
+
 	Driver driver;
     private Connection connection;
 
@@ -21,7 +23,7 @@ public class BrasaVivaCRUD {
         try {
         	this.driver = new Driver();
 			DriverManager.registerDriver(driver);
-            this.connection = DriverManager.getConnection(LOCALHOST, USER, "");
+            this.connection = DriverManager.getConnection(LOCALHOST, USER, PASSWORD);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -36,7 +38,6 @@ public class BrasaVivaCRUD {
             stmt.setString(3, cliente.getEmail());
             stmt.setString(4, cliente.getTelefone());
             stmt.executeUpdate();
-            
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -128,24 +129,7 @@ public class BrasaVivaCRUD {
         }
     }
 
-    public void atualizarVenda(Venda venda) {
-        String sql = "UPDATE vendas SET id_cliente = ?, data_venda = ? WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setLong(1, venda.getIdCliente());
-            stmt.setDate(2, new java.sql.Date(venda.getDataVenda().getTime()));
-            stmt.setLong(3, venda.getId());
-            int rowsUpdated = stmt.executeUpdate();
-            if (rowsUpdated > 0) {
-                System.out.println("Venda atualizada com sucesso!");
-            } else {
-                System.out.println("Venda não encontrada para atualização.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public List<Cliente> pesquisarClientePorNome(String nome) {
+    public List<Cliente> pesquisarClienteNome(String nome) {
         List<Cliente> clientes = new ArrayList<>();
         String sql = "SELECT * FROM clientes WHERE nome LIKE ?";
 
@@ -168,7 +152,7 @@ public class BrasaVivaCRUD {
         return clientes;
     }
 
-    public List<Cliente> pesquisarClientePorCPF(String cpf) {
+    public List<Cliente> pesquisarClienteCPF(String cpf) {
         // Remover a formatação do CPF para garantir que apenas números sejam comparados
         String cpfNumerico = cpf.replaceAll("[^\\d]", "");
 
@@ -201,7 +185,7 @@ public class BrasaVivaCRUD {
         return clientesEncontrados;
     }
 
-    public List<Produto> pesquisarProdutoPorNome(String nome) {
+    public List<Produto> pesquisarProdutoNome(String nome) {
         List<Produto> produtos = new ArrayList<>();
         String sql = "SELECT * FROM produtos WHERE nome LIKE ?";
 
