@@ -4,15 +4,13 @@ public class Produto {
     private Long id;
     private double preco;
     private String nome;
-    private int quantidade;
 
     public Produto() {}
 
-    public Produto(Long id, String nome, double preco, int quantidade) {
+    public Produto(Long id, String nome, double preco) {
         this.id = id;
         this.preco = preco;
         this.nome = nome;
-        this.quantidade = quantidade;
     }
 
     public Long getId() {
@@ -39,11 +37,14 @@ public class Produto {
         this.nome = nome;
     }
 
-    public int getQuantidade() {
-        return quantidade;
+    // Método para calcular o valor total de um produto baseado na quantidade
+    public double calcularValorTotal(int quantidade) {
+        return this.preco * quantidade;
     }
 
-    public void setQuantidade(int quantidade) {
-        this.quantidade = quantidade;
+    @Override
+    public String toString() {
+        return String.format("Produto{id=%d, nome='%s', preco=%.2f}", id, nome, preco);
     }
+
 }

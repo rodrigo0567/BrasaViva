@@ -99,12 +99,25 @@ public class AreaAtendente {
     private void visualizarCardapio() {
         List<Produto> produtos = crud.listarTodosProdutos();
         System.out.println("\n--- Produtos Disponíveis ---");
+
         for (Produto produto : produtos) {
-            System.out.println("ID: " + produto.getId() +
-                    "\nNome: " + produto.getNome() +
-                    "\nPreço: R$ " + produto.getPreco() +
-                    "\nQuantidade disponível: " + produto.getQuantidade() + "\n"
-            );
+            // Buscar o estoque para o produto
+            Estoque estoque = crud.buscarEstoquePorProduto(produto.getId());
+
+            if (estoque != null) {
+                System.out.println("ID: " + produto.getId() +
+                        "\nNome: " + produto.getNome() +
+                        "\nPreço: R$ " + String.format("%.2f", produto.getPreco()) +
+                        "\nQuantidade disponível: " + estoque.getQuantidadeDisponivel() + "\n"
+                );
+            } else {
+                // Caso o estoque não seja encontrado
+                System.out.println("ID: " + produto.getId() +
+                        "\nNome: " + produto.getNome() +
+                        "\nPreço: R$ " + String.format("%.2f", produto.getPreco()) +
+                        "\nQuantidade disponível: Não disponível\n"
+                );
+            }
         }
     }
 }

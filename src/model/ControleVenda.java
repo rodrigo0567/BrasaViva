@@ -4,6 +4,8 @@ import dao.BrasaVivaCRUD;
 import java.util.List;
 import java.util.Scanner;
 
+import model.Pagamento;
+
 public class ControleVenda {
     private final Scanner sc;
     private final BrasaVivaCRUD crud;
@@ -75,14 +77,14 @@ public class ControleVenda {
     }
 
     private void visualizarCardapio() {
-        List<Produto> produtos = crud.listarTodosProdutos();
-        System.out.println("\n--- Produtos Disponíveis ---");
+        List<Produto> produtos = crud.listarTodosProdutos(); // Obtém todos os produtos do banco de dados
+
+        System.out.println("\n--- Cardápio ---");
         for (Produto produto : produtos) {
-            System.out.println("ID: " + produto.getId() +
-                    "\nNome: " + produto.getNome() +
-                    "\nPreço: R$ " + produto.getPreco() +
-                    "\nQuantidade disponível em estoque: " + produto.getQuantidade() + "\n"
-            );
+            System.out.println("ID: " + produto.getId());
+            System.out.println("Nome: " + produto.getNome());
+            System.out.println("Preço: R$ " + String.format("%.2f", produto.getPreco()));
+            System.out.println("----------------");
         }
     }
 
@@ -102,10 +104,16 @@ public class ControleVenda {
                 return;
             }
 
-            if (produtoEscolhido.getQuantidade() >= quantidade) {
+            Estoque estoqueProduto = crud.buscarEstoquePorProduto(produtoEscolhido.getId());
+            if (estoqueProduto == null) {
+                System.out.println("Estoque não encontrado para o produto");
+                return;
+            }
+
+            if (estoqueProduto.getQuantidadeDisponivel() >= quantidade) {
                 venda.adicionarProduto(produtoEscolhido, quantidade);
-                produtoEscolhido.setQuantidade(produtoEscolhido.getQuantidade() - quantidade);
-                crud.atualizarProduto(produtoEscolhido);
+                estoqueProduto.decrementarQuantidade(quantidade);
+                crud.atualizarEstoque(estoqueProduto);
                 System.out.println("Produto adicionado à compra com sucesso!");
             } else {
                 System.out.println("Quantidade insuficiente no estoque.");
@@ -177,13 +185,21 @@ public class ControleVenda {
             quantidadeAlterar = -quantidadeAlterar;
         }
 
-        Produto produtoEstoque = crud.exibirUmProduto(idProduto);
-        if (produtoEstoque == null) {
+        Produto produto = crud.exibirUmProduto(idProduto);
+        if (produto == null) {
             System.out.println("Produto não encontrado!");
             return;
         }
 
-        int novaQuantidadeEstoque = produtoEstoque.getQuantidade() - quantidadeAlterar;
+        Estoque estoque = crud.buscarEstoquePorProduto(idProduto);
+        if (estoque == null) {
+            System.out.println("Estoque não encontrado para o produto!");
+            return;
+        }
+
+        int quantidadeAtualEstoque = estoque.getQuantidadeDisponivel();
+        int novaQuantidadeEstoque = quantidadeAtualEstoque - quantidadeAlterar;
+
         if (novaQuantidadeEstoque < 0) {
             System.out.println("Não há estoque suficiente para completar a operação!");
             return;
@@ -195,8 +211,8 @@ public class ControleVenda {
             return;
         }
 
-        produtoEstoque.setQuantidade(novaQuantidadeEstoque);
-        crud.atualizarProduto(produtoEstoque);
+        estoque.setQuantidadeDisponivel(novaQuantidadeEstoque);
+        crud.atualizarProduto(produto);
 
         System.out.println("Quantidade do produto alterada com sucesso!");
     }
@@ -218,9 +234,44 @@ public class ControleVenda {
     }
 
     private void finalizarVenda() {
-        double total = venda.calcularValorTotal();
-        System.out.println("Total da venda: R$ " + total);
+        // Exibir os produtos selecionados e o valor total
+        visualizarProdutosSelecionados();
+
+        // Calcular o valor total da venda
+        double valorTotal = venda.calcularValorTotal();
+        System.out.println("Preço Final do Pedido: R$ " + String.format("%.2f", valorTotal));
+
+        // Solicitar forma de pagamento
+        System.out.println("Escolha a forma de pagamento:");
+        System.out.println("1. Dinheiro");
+        System.out.println("2. Cartão");
+        int formaPagamento = lerOpcao();
+
+        if (formaPagamento != 1 && formaPagamento != 2) {
+            System.out.println("Opção inválida.");
+            return;
+        }
+
+        Pagamento pagamento;
+        if (formaPagamento == 1) {
+            pagamento = new Pagamento(valorTotal, "Dinheiro");
+        } else {
+            pagamento = new Pagamento(valorTotal, "Cartão");
+        }
+
+        // Inserir a venda e o pagamento no banco de dados
         crud.inserirVenda(venda);
+        crud.inserirPagamento(pagamento);
+
+        // Atualizar o estoque
+        for (ProdutoVenda pv : venda.getProdutos()) {
+            Estoque estoque = crud.buscarEstoquePorProduto(pv.getProduto().getId());
+            if (estoque != null) {
+                estoque.decrementarQuantidade(pv.getQuantidade());
+                crud.atualizarEstoque(estoque);
+            }
+        }
+
         System.out.println("Venda finalizada com sucesso!");
     }
 }

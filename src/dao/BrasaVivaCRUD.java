@@ -1,9 +1,6 @@
 package dao;
 
-import model.Cliente;
-import model.Produto;
-import model.ProdutoVenda;
-import model.Venda;
+import model.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,9 +9,9 @@ import java.util.List;
 import com.mysql.cj.jdbc.Driver;
 
 public class BrasaVivaCRUD {
-	private static final String LOCALHOST = "jdbc:mysql://localhost:3306/churrascaria_db";
+	private static final String LOCALHOST = "jdbc:mysql://localhost:3306/churrascaria";
 	private static final String USER = "root";
-    private static final String PASSWORD = "K22k22k4k2*";
+    private static final String PASSWORD = "";
 
 	Driver driver;
     private Connection connection;
@@ -43,37 +40,138 @@ public class BrasaVivaCRUD {
         }
     }
 
-    public void inserirProduto(Produto produto) {
-        String sql = "INSERT INTO produtos (nome, preco, quantidade) VALUES (?, ?, ?)";
+    public void inserirEstoque(Estoque estoque) {
+        String sql = "INSERT INTO estoque (id_produto, quantidade_disponivel) VALUES (?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, produto.getNome());
-            stmt.setDouble(2, produto.getPreco());
-            stmt.setInt(3, produto.getQuantidade());
+            stmt.setLong(1, estoque.getIdProduto());
+            stmt.setInt(2, estoque.getQuantidadeDisponivel());
             stmt.executeUpdate();
-            System.out.println("Produto inserido com sucesso!");
+            System.out.println("Estoque inserido com sucesso!");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    public void atualizarEstoque(Estoque estoque) {
+        String sql = "UPDATE estoque SET quantidade = ? WHERE id_produto = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, estoque.getQuantidadeDisponivel());
+            stmt.setLong(2, estoque.getIdProduto());
+            stmt.executeUpdate();
+            System.out.println("Estoque atualizado com sucesso!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removerEstoque(Long idProduto) {
+        String sql = "DELETE FROM estoque WHERE id_produto = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, idProduto);
+            stmt.executeUpdate();
+            System.out.println("Estoque removido com sucesso!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void inserirPagamento(Pagamento pagamento) {
+        String sql = "INSERT INTO pagamento (id_venda, valor_total, metodo_pagamento, data_pagamento) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, pagamento.getVenda().getId());
+            stmt.setDouble(2, pagamento.getValorPago());
+            stmt.setString(3, pagamento.getMetodoPagamento());
+            stmt.setDate(4, new java.sql.Date(pagamento.getDataPagamento().getTime()));
+            stmt.executeUpdate();
+            System.out.println("Pagamento inserido com sucesso!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void atualizarPagamento(Pagamento pagamento) {
+        String sql = "UPDATE pagamentos SET valor = ?, metodo = ?, data_pagamento = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setDouble(1, pagamento.getValorPago());
+            stmt.setString(2, pagamento.getMetodoPagamento());
+            stmt.setDate(3, new java.sql.Date(pagamento.getDataPagamento().getTime()));
+            stmt.setLong(4, pagamento.getId());
+            stmt.executeUpdate();
+            System.out.println("Pagamento atualizado com sucesso!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removerPagamento(Long id) {
+        String sql = "DELETE FROM pagamentos WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+            System.out.println("Pagamento removido com sucesso!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+//    public Pagamento exibirUmPagamento(Long id) {
+//        Pagamento pagamento = null;
+//        String sql = "SELECT p.id AS pagamento_id, p.id_venda, p.valor_pago, p.metodo_pagamento, p.data_pagamento, " +
+//                "v.id_cliente " +
+//                "FROM pagamento p " +
+//                "JOIN venda v ON p.id_venda = v.id " +
+//                "WHERE p.id = ?";
+//
+//        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+//            stmt.setLong(1, id);
+//            ResultSet rs = stmt.executeQuery();
+//            if (rs.next()) {
+//                Long idVenda = rs.getLong("id_venda");
+//                double valorPago = rs.getDouble("valor_pago");
+//                String metodoPagamento = rs.getString("metodo_pagamento");
+//                Date dataPagamento = rs.getDate("data_pagamento");
+//
+//                // Criar a instância de Venda correspondente ao pagamento
+//                Venda venda = new Venda();
+//                venda.setId(idVenda);
+//                venda.setIdCliente(rs.getLong("id_cliente"));
+//
+//                pagamento = new Pagamento(
+//                        rs.getLong("pagamento_id"),
+//                        venda,
+//                        valorPago,
+//                        metodoPagamento,
+//                        dataPagamento
+//                );
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return pagamento;
+//    }
+
+
+//    public void inserirProduto(Produto produto) {
+//        String sql = "INSERT INTO produtos (nome, preco, quantidade) VALUES (?, ?, ?)";
+//        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+//            stmt.setString(1, produto.getNome());
+//            stmt.setDouble(2, produto.getPreco());
+//            stmt.setInt(3, produto.getQuantidade());
+//            stmt.executeUpdate();
+//            System.out.println("Produto inserido com sucesso!");
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     public void inserirVenda(Venda venda) {
-        String sql = "INSERT INTO vendas (id_cliente, data_venda) VALUES (?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        String sql = "INSERT INTO venda (id_cliente, data_venda, valor_total) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, venda.getIdCliente());
             stmt.setDate(2, new java.sql.Date(venda.getDataVenda().getTime()));
+            stmt.setDouble(3, venda.calcularValorTotal());
             stmt.executeUpdate();
-
-            ResultSet generatedKeys = stmt.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                long vendaID = generatedKeys.getLong(1);
-                venda.setId(vendaID);
-
-                // Inserir produtos da venda
-                for (ProdutoVenda pv : venda.getProdutos()) {
-                    inserirProdutoVenda(pv, vendaID);
-                }
-            }
-            System.out.println("Venda registrada com sucesso!");
+            System.out.println("Venda inserida com sucesso!");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -112,10 +210,9 @@ public class BrasaVivaCRUD {
     }
 
     public void atualizarProduto(Produto produto) {
-        String sql = "UPDATE produtos SET nome = ?, quantidade = ?, preco = ? WHERE id = ?";
+        String sql = "UPDATE produtos SET nome = ?, preco = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, produto.getNome());
-            stmt.setInt(2, produto.getQuantidade());
             stmt.setDouble(3, produto.getPreco());
             stmt.setLong(4, produto.getId());
             int rowsUpdated = stmt.executeUpdate();
@@ -185,27 +282,36 @@ public class BrasaVivaCRUD {
         return clientesEncontrados;
     }
 
-    public List<Produto> pesquisarProdutoNome(String nome) {
-        List<Produto> produtos = new ArrayList<>();
-        String sql = "SELECT * FROM produtos WHERE nome LIKE ?";
-
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, "%" + nome + "%");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Produto produto = new Produto(
-                        rs.getLong("id"),
-                        rs.getString("nome"),
-                        rs.getDouble("preco"),
-                        rs.getInt("quantidade")
-                );
-                produtos.add(produto);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return produtos;
-    }
+//    public List<Estoque> pesquisarProdutoNome(String nome) {
+//        List<Estoque> estoques = new ArrayList<>();
+//        String sql = "SELECT p.id AS produto_id, p.nome, p.preco, e.id AS estoque_id, e.quantidade_disponivel " +
+//                "FROM produto p " +
+//                "JOIN estoque e ON p.id = e.id_produto " +
+//                "WHERE p.nome LIKE ?";
+//
+//        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+//            stmt.setString(1, "%" + nome + "%");
+//            ResultSet rs = stmt.executeQuery();
+//            while (rs.next()) {
+//                Produto produto = new Produto(
+//                        rs.getLong("produto_id"),
+//                        rs.getString("nome"),
+//                        rs.getDouble("preco")
+//                );
+//
+//                Estoque estoque = new Estoque(
+//                        rs.getLong("estoque_id"),
+//                        produto,
+//                        rs.getInt("quantidade_disponivel")
+//                );
+//
+//                estoques.add(estoque);
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return estoques;
+//    }
 
     public void removerCliente(Long id) {
         String sql = "DELETE FROM clientes WHERE id = ?";
@@ -286,8 +392,7 @@ public class BrasaVivaCRUD {
                 Produto produto = new Produto(
                     rs.getLong("id"),
                     rs.getString("nome"),
-                    rs.getDouble("preco"),
-                    rs.getInt("quantidade")
+                    rs.getDouble("preco")
                 );
                 produtos.add(produto);
             }
@@ -328,14 +433,55 @@ public class BrasaVivaCRUD {
                 produto = new Produto(
                         rs.getLong("id"),
                         rs.getString("nome"),
-                        rs.getDouble("preco"),
-                        rs.getInt("quantidade")
+                        rs.getDouble("preco")
                 );
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return produto;
+    }
+
+    public Estoque buscarEstoquePorProduto(Long idProduto) {
+        Estoque estoque = null;
+        String sql = "SELECT e.id AS estoque_id, e.quantidade_disponivel " +
+                "FROM estoque e " +
+                "WHERE e.id_produto = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, idProduto);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                // Crie um objeto Estoque com os dados obtidos
+                estoque = new Estoque(
+                        rs.getLong("estoque_id"), // ID do estoque
+                        rs.getInt("quantidade_disponivel") // Quantidade disponível
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return estoque;
+    }
+
+
+
+    public Estoque obterEstoquePorProduto(long idProduto) {
+        Estoque estoque = null;
+        String sql = "SELECT * FROM estoque WHERE id_produto = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, idProduto);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                estoque = new Estoque(
+                        rs.getLong("id_produto"),
+                        rs.getInt("quantidade_disponivel")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return estoque;
     }
 
 }

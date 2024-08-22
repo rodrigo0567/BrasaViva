@@ -10,11 +10,18 @@ public class Venda {
     private Long idCliente;
     private Long idAtendente;
     private final List<ProdutoVenda> produtos;
+    private List<Pagamento> pagamentos;
     private final Date dataVenda;
 
     public Venda() {
         this.produtos = new ArrayList<>();
         this.dataVenda = new Date();
+    }
+
+    public Venda(Long id) {
+        this();
+        this.id = id;
+
     }
 
     public Venda(Cliente cliente) {
