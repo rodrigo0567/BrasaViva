@@ -162,9 +162,9 @@ public class ControleVenda {
     private void alterarProdutoDaVenda() {
         System.out.println("Digite o ID do produto que deseja alterar na compra: ");
         long idProduto = sc.nextLong();
-        System.out.println("Selecione uma opção: ");
-        System.out.println("1. Adicionar Quantidade");
+        System.out.println("\n1. Adicionar Quantidade");
         System.out.println("2. Subtrair Quantidade");
+        System.out.print("Escolha uma opção: ");
         int op = sc.nextInt();
         sc.nextLine();
 
@@ -234,16 +234,23 @@ public class ControleVenda {
     }
 
     private void finalizarVenda() {
-        // Exibir os produtos selecionados e o valor total
+        // Verificar se a venda e o cliente estão configurados corretamente
+        if (venda == null) {
+            System.out.println("Erro: Venda não está configurada.");
+            return;
+        }
+        if (venda.getIdCliente() == null) {
+            System.out.println("Erro: Cliente não está associado à venda.");
+            return;
+        }
+
+        double valorTotal = venda.calcularValorTotal();
         visualizarProdutosSelecionados();
 
-        // Calcular o valor total da venda
-        double valorTotal = venda.calcularValorTotal();
-
-        // Solicitar forma de pagamento
         System.out.println("Escolha a forma de pagamento:");
         System.out.println("1. Dinheiro");
         System.out.println("2. Cartão");
+        System.out.print("Selecione uma opção: ");
         int formaPagamento = lerOpcao();
 
         if (formaPagamento != 1 && formaPagamento != 2) {
@@ -251,18 +258,39 @@ public class ControleVenda {
             return;
         }
 
-        Pagamento pagamento;
+        String metodoPagamento = (formaPagamento == 1) ? "Dinheiro" : "Cartão";
+        double valorPago = 0.0;
         if (formaPagamento == 1) {
-            pagamento = new Pagamento(valorTotal, "Dinheiro");
+            while (true) {
+                System.out.print("Digite o valor pago pelo cliente: R$ ");
+                try {
+                    valorPago = sc.nextDouble();
+                    sc.nextLine();
+                    if (valorPago < valorTotal) {
+                        System.out.println("Valor pago é insuficiente. Tente novamente.");
+                    } else {
+                        double troco = valorPago - valorTotal;
+                        System.out.println("Troco: R$ " + String.format("%.2f", troco));
+                        break;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Entrada inválida. Tente novamente.");
+                    sc.nextLine();
+                }
+            }
         } else {
-            pagamento = new Pagamento(valorTotal, "Cartão");
+            System.out.println("Pagamento em cartão aceito.");
+            // No cartão, o cliente paga exatamente o valor total
         }
+
+        Pagamento pagamento = new Pagamento(venda, valorTotal, metodoPagamento);
 
         // Inserir a venda e o pagamento no banco de dados
         crud.inserirVenda(venda);
+        crud.inserirVendaProduto(venda);
+        pagamento.setVenda(venda);
         crud.inserirPagamento(pagamento);
 
-        // Atualizar o estoque
         for (ProdutoVenda pv : venda.getProdutos()) {
             Estoque estoque = crud.buscarEstoquePorProduto(pv.getProduto().getId());
             if (estoque != null) {
@@ -270,7 +298,7 @@ public class ControleVenda {
                 crud.atualizarEstoque(estoque);
             }
         }
-
         System.out.println("Venda finalizada com sucesso!");
+
     }
 }

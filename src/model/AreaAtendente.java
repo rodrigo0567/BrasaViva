@@ -85,8 +85,8 @@ public class AreaAtendente {
         if (clientesEncontrados.size() == 1) {
             Cliente clienteLogado = clientesEncontrados.get(0);
             System.out.println("\nCliente encontrado com sucesso!");
-            ControleVenda vendaController = new ControleVenda(sc, crud, clienteLogado);
-            vendaController.processarVenda();
+            ControleVenda controleVenda = new ControleVenda(sc, crud, clienteLogado);
+            controleVenda.processarVenda();
         } else if (clientesEncontrados.isEmpty()) {
             System.out.println("Cliente não encontrado com o CPF fornecido");
         } else {

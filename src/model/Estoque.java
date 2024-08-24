@@ -23,7 +23,7 @@ public class Estoque {
 
     public void setQuantidadeDisponivel(int quantidadeDisponivel) {
         this.quantidadeDisponivel = quantidadeDisponivel;
-    }
+    } // utilizado para alterar a quantida disponível da compra do cliente
 
     public void incrementarQuantidade(int quantidade) {
         this.quantidadeDisponivel += quantidade;

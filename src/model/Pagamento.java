@@ -10,9 +10,11 @@ public class Pagamento {
     private String metodoPagamento;
     private Date dataPagamento;
 
-    public Pagamento(double valorPago, String metodoPagamento) {
+    public Pagamento(Venda venda, double valorPago, String metodoPagamento) {
+        this.venda = venda;
         this.valorPago = valorPago;
         this.metodoPagamento = metodoPagamento;
+        this.dataPagamento = new Date();
     }
 
     public Long getId() {
@@ -21,6 +23,13 @@ public class Pagamento {
 
     public Venda getVenda() {
         return venda;
+    }
+
+    public void setVenda(Venda venda) {
+        if (venda == null) {
+            throw new IllegalArgumentException("Venda não pode ser nula.");
+        }
+        this.venda = venda;
     }
 
     public double getValorPago() {
@@ -46,9 +55,9 @@ public class Pagamento {
     @Override
     public String toString() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        return "Pagamento [id=" + id + ", idVenda=" + venda.getId() + ", valorPago=" + valorPago +
-                ", metodoPagamento=" + metodoPagamento + ", dataPagamento=" + sdf.format(dataPagamento) + "]";
+        return "Pagamento [id=" + id + ", idVenda=" + (venda != null ? venda.getId() : "null") +
+                ", valorPago=" + valorPago + ", metodoPagamento=" + metodoPagamento +
+                ", dataPagamento=" + sdf.format(dataPagamento) + "]";
     }
-
 
 }

@@ -15,13 +15,8 @@ public class Venda {
 
     public Venda() {
         this.produtos = new ArrayList<>();
+        this.pagamentos = new ArrayList<>();
         this.dataVenda = new Date();
-    }
-
-    public Venda(Long id) {
-        this();
-        this.id = id;
-
     }
 
     public Venda(Cliente cliente) {
@@ -110,7 +105,7 @@ public class Venda {
 
 
     public void removerProduto(Long idProduto) {
-        produtos.removeIf(pv -> pv.getProduto().getId() == idProduto);
+        produtos.removeIf(pv -> pv.getProduto().getId().equals(idProduto));
     }
 
     public double calcularValorTotal() {
@@ -121,7 +116,6 @@ public class Venda {
         return total;
     }
 
-    // Ao finalizar compra
     public void gerarComanda(Cliente cliente) {
         System.out.println("\n--- Comanda ---\n");
         System.out.println("Cliente Nome: " + cliente.getNome());
@@ -139,6 +133,7 @@ public class Venda {
         System.out.println("\nValor total: R$ " + valorTotal);
         System.out.println("===================");
     }
+
 
     private ProdutoVenda encontrarProdutoNaVenda(Long idProduto) {
         for (ProdutoVenda pv : produtos) {
