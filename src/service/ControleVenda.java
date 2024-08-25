@@ -1,34 +1,38 @@
-package model;
+package service;
 
 import dao.BrasaVivaCRUD;
-import java.util.List;
-import java.util.Scanner;
+import model.*;
+import utils.CardapioUtil;
 
-import model.Pagamento;
+import java.sql.SQLException;
+import java.util.Scanner;
 
 public class ControleVenda {
     private final Scanner sc;
-    private final BrasaVivaCRUD crud;
-    private final Cliente clienteLogado;
     private final Venda venda;
+    private BrasaVivaCRUD crud = new BrasaVivaCRUD();
+    private CardapioUtil cardapioUtil = new CardapioUtil(crud);
 
-    public ControleVenda(Scanner sc, BrasaVivaCRUD crud, Cliente clienteLogado) {
+
+    public ControleVenda(Scanner sc, BrasaVivaCRUD crud, Cliente cliente) {
         this.sc = sc;
         this.crud = crud;
-        this.clienteLogado = clienteLogado;
-        this.venda = new Venda(clienteLogado);
+        this.venda = new Venda();
+        if (cliente != null) {
+            this.venda.setIdCliente(cliente.getId()); // Associação do cliente à venda
+        } else {
+            System.out.println("Cliente não pode ser nulo.");
+        }
     }
 
     public void processarVenda() {
-        boolean emProgresso = true;
-
         while (true) {
             exibirMenu();
             int opVenda = lerOpcao();
 
             switch (opVenda) {
                 case 1:
-                    visualizarCardapio();
+                    cardapioUtil.visualizarCardapio();
                     break;
                 case 2:
                     adicionarProdutoVenda();
@@ -76,18 +80,6 @@ public class ControleVenda {
         return opcao;
     }
 
-    private void visualizarCardapio() {
-        List<Produto> produtos = crud.listarTodosProdutos(); // Obtém todos os produtos do banco de dados
-
-        System.out.println("\n--- Cardápio ---");
-        for (Produto produto : produtos) {
-            System.out.println("ID: " + produto.getId());
-            System.out.println("Nome: " + produto.getNome());
-            System.out.println("Preço: R$ " + String.format("%.2f", produto.getPreco()));
-            System.out.println("----------------");
-        }
-    }
-
     private void adicionarProdutoVenda() {
         boolean continuarComprando = true;
 
@@ -112,8 +104,6 @@ public class ControleVenda {
 
             if (estoqueProduto.getQuantidadeDisponivel() >= quantidade) {
                 venda.adicionarProduto(produtoEscolhido, quantidade);
-                estoqueProduto.decrementarQuantidade(quantidade);
-                crud.atualizarEstoque(estoqueProduto);
                 System.out.println("Produto adicionado à compra com sucesso!");
             } else {
                 System.out.println("Quantidade insuficiente no estoque.");
@@ -128,7 +118,15 @@ public class ControleVenda {
         try {
             long idProduto = sc.nextLong();
             sc.nextLine(); // Limpa o buffer
-            return crud.exibirUmProduto(idProduto);
+            Produto produto = crud.exibirUmProduto(idProduto);
+
+            if (produto != null) {
+                System.out.println("Produto selecionado: " + produto.getNome());
+                return produto;
+            } else {
+                System.out.println("Produto não encontrado.");
+                return null;
+            }
         } catch (Exception e) {
             System.out.println("ID inválido.");
             sc.nextLine(); // Limpa o buffer em caso de erro
@@ -220,7 +218,7 @@ public class ControleVenda {
     private void visualizarProdutosSelecionados() {
         System.out.println("\n--- Produtos Selecionados ---");
         double precoTotalPedido = 0.0;
-        for (ProdutoVenda pv : venda.getProdutos()) {
+        for (VendaProduto pv : venda.getProdutos()) {
             double precoTotalProduto = pv.getProduto().getPreco() * pv.getQuantidade();
             precoTotalPedido += precoTotalProduto;
             System.out.println("Produto: " + pv.getProduto().getNome() +
@@ -234,71 +232,74 @@ public class ControleVenda {
     }
 
     private void finalizarVenda() {
-        // Verificar se a venda e o cliente estão configurados corretamente
-        if (venda == null) {
-            System.out.println("Erro: Venda não está configurada.");
-            return;
-        }
-        if (venda.getIdCliente() == null) {
-            System.out.println("Erro: Cliente não está associado à venda.");
-            return;
-        }
+        try {
+            visualizarProdutosSelecionados();
 
-        double valorTotal = venda.calcularValorTotal();
-        visualizarProdutosSelecionados();
+            // Calcula o valor total da venda
+            double valorTotal = venda.valorTotal();
+            venda.setValorTotal(valorTotal);
 
-        System.out.println("Escolha a forma de pagamento:");
+            // Insere a venda na tabela 'venda'
+            long idVenda = crud.inserirVenda(venda);
+            venda.setId(idVenda);
+
+            // Solicita o método de pagamento e insere o pagamento na tabela 'pagamento'
+            inserirPagamento(venda);
+
+            // Insere os produtos da venda na tabela 'venda_produto'
+            for (VendaProduto vp : venda.getProdutos()) {
+                crud.inserirVendaProduto(idVenda, vp);
+
+                Estoque estoqueProduto = crud.buscarEstoquePorProduto(vp.getProduto().getId());
+                if (estoqueProduto != null) {
+                    estoqueProduto.decrementarQuantidade(vp.getQuantidade());
+                    crud.atualizarEstoque(estoqueProduto);
+                } else {
+                    System.out.println("Estoque não encontrado para o produto: " + vp.getProduto().getNome());
+                }
+            }
+
+            System.out.println("Venda finalizada com sucesso!");
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao finalizar venda: " + e.getMessage());
+        }
+    }
+
+    private void inserirPagamento(Venda venda) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Selecione a opção de pagamento: ");
         System.out.println("1. Dinheiro");
         System.out.println("2. Cartão");
-        System.out.print("Selecione uma opção: ");
-        int formaPagamento = lerOpcao();
+        System.out.print("Resposta: ");
+        int opPagamento = lerOpcao();
 
-        if (formaPagamento != 1 && formaPagamento != 2) {
+        if (opPagamento != 1 && opPagamento != 2) {
             System.out.println("Opção inválida.");
             return;
         }
 
-        String metodoPagamento = (formaPagamento == 1) ? "Dinheiro" : "Cartão";
-        double valorPago = 0.0;
-        if (formaPagamento == 1) {
-            while (true) {
-                System.out.print("Digite o valor pago pelo cliente: R$ ");
-                try {
-                    valorPago = sc.nextDouble();
-                    sc.nextLine();
-                    if (valorPago < valorTotal) {
-                        System.out.println("Valor pago é insuficiente. Tente novamente.");
-                    } else {
-                        double troco = valorPago - valorTotal;
-                        System.out.println("Troco: R$ " + String.format("%.2f", troco));
-                        break;
-                    }
-                } catch (Exception e) {
-                    System.out.println("Entrada inválida. Tente novamente.");
-                    sc.nextLine();
-                }
+        String metodoPagamento = (opPagamento == 1) ? "Dinheiro" : "Cartão";
+        double valorTotal = venda.valorTotal();
+
+        if (opPagamento == 1) {
+            System.out.println("Digite o valor em dinheiro recebido: ");
+            double valorRecebido = sc.nextDouble();
+            sc.nextLine();
+
+            if (valorRecebido < valorTotal) {
+                System.out.println("Erro: O valor recebido é menor que o valor total da venda.");
+                return;
             }
-        } else {
-            System.out.println("Pagamento em cartão aceito.");
-            // No cartão, o cliente paga exatamente o valor total
+
+            double troco = valorRecebido - valorTotal;
+            System.out.println("Troco: R$ " + String.format("%.2f", troco));
+
         }
 
         Pagamento pagamento = new Pagamento(venda, valorTotal, metodoPagamento);
-
-        // Inserir a venda e o pagamento no banco de dados
-        crud.inserirVenda(venda);
-        crud.inserirVendaProduto(venda);
-        pagamento.setVenda(venda);
         crud.inserirPagamento(pagamento);
-
-        for (ProdutoVenda pv : venda.getProdutos()) {
-            Estoque estoque = crud.buscarEstoquePorProduto(pv.getProduto().getId());
-            if (estoque != null) {
-                estoque.decrementarQuantidade(pv.getQuantidade());
-                crud.atualizarEstoque(estoque);
-            }
-        }
-        System.out.println("Venda finalizada com sucesso!");
-
+        System.out.println("Pagamento em Realizado com sucesso!");
     }
 }

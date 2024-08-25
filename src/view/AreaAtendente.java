@@ -1,13 +1,18 @@
-package model;
+package view;
 
 import java.util.List;
 import dao.BrasaVivaCRUD;
+import model.Cliente;
+import service.ControleVenda;
+import utils.CardapioUtil;
+
 import java.util.Scanner;
 
 public class AreaAtendente {
 
     private Scanner sc = new Scanner(System.in);
     private BrasaVivaCRUD crud = new BrasaVivaCRUD();
+    private CardapioUtil cardapioUtil = new CardapioUtil(crud);
 
     public String areaDoAtendente() {
         while(true) {
@@ -28,7 +33,7 @@ public class AreaAtendente {
                     realizarVenda();
                     break;
                 case 3:
-                    visualizarCardapio();
+                    cardapioUtil.visualizarCardapio();
                     break;
                 case 4:
                     return "Saindo...";
@@ -36,7 +41,6 @@ public class AreaAtendente {
                     System.out.println("Opção inválida. Tente novamente.");
             }
         }
-
     }
 
     private void cadastrarCliente() {
@@ -73,12 +77,12 @@ public class AreaAtendente {
         System.out.print("Insira o CPF do cliente atendido: ");
         String cpfLogin = sc.nextLine().replaceAll("[^\\d]", "");
 
-        if (cpfLogin.length() == 11) {
-            cpfLogin = formatarCPF(cpfLogin);
-        } else {
+        if (cpfLogin.length() != 11) {
             System.out.println("CPF inválido. Certifique-se de digitar 11 dígitos");
             return;
         }
+
+        cpfLogin = formatarCPF(cpfLogin);
 
         List<Cliente> clientesEncontrados = crud.pesquisarClienteCPF(cpfLogin);
 
@@ -86,6 +90,7 @@ public class AreaAtendente {
             Cliente clienteLogado = clientesEncontrados.get(0);
             System.out.println("\nCliente encontrado com sucesso!");
             ControleVenda controleVenda = new ControleVenda(sc, crud, clienteLogado);
+            //método processarVenda abre outra tela
             controleVenda.processarVenda();
         } else if (clientesEncontrados.isEmpty()) {
             System.out.println("Cliente não encontrado com o CPF fornecido");
@@ -94,28 +99,4 @@ public class AreaAtendente {
         }
     }
 
-    private void visualizarCardapio() {
-        List<Produto> produtos = crud.listarTodosProdutos();
-        System.out.println("\n--- Produtos Disponíveis ---");
-
-        for (Produto produto : produtos) {
-            // Buscar o estoque para o produto
-            Estoque estoque = crud.buscarEstoquePorProduto(produto.getId());
-
-            if (estoque != null) {
-                System.out.println("ID: " + produto.getId() +
-                        "\nNome: " + produto.getNome() +
-                        "\nPreço: R$ " + String.format("%.2f", produto.getPreco()) +
-                        "\nQuantidade disponível: " + estoque.getQuantidadeDisponivel() + "\n"
-                );
-            } else {
-                // Caso o estoque não seja encontrado
-                System.out.println("ID: " + produto.getId() +
-                        "\nNome: " + produto.getNome() +
-                        "\nPreço: R$ " + String.format("%.2f", produto.getPreco()) +
-                        "\nQuantidade disponível: Não disponível\n"
-                );
-            }
-        }
-    }
 }

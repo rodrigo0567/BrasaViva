@@ -1,7 +1,6 @@
-package main;
+package view;
 
 import dao.BrasaVivaCRUD;
-import model.*;
 
 import java.util.Scanner;
 
@@ -13,6 +12,7 @@ public class Main {
         BrasaVivaCRUD crud = new BrasaVivaCRUD();
 
         AreaAtendente areaAtendente = new AreaAtendente();
+        AreaGerente areaGerente = new AreaGerente();
 
         while (true) {
             System.out.println("\nBRASA VIVA CHURRASCARIA");
@@ -26,7 +26,7 @@ public class Main {
 
             switch (op) {
                 case 1:
-                    System.out.println("Em obra...\n");
+                    areaGerente.areaDoGerente();
                     break;
                 case 2:
                     areaAtendente.areaDoAtendente();

@@ -1,10 +1,10 @@
 package model;
 
-public class ProdutoVenda {
+public class VendaProduto {
     private Produto produto;
     private int quantidade;
 
-    public ProdutoVenda(Produto produto, int quantidade) {
+    public VendaProduto(Produto produto, int quantidade) {
         this.produto = produto;
         this.quantidade = quantidade;
     }
