@@ -60,7 +60,7 @@ public class Venda {
     }
 
     public List<VendaProduto> getProdutos() {
-        return new ArrayList<>(produtos);
+        return produtos;
     }
 
     public void setProdutos(List<VendaProduto> produtos) {
@@ -81,6 +81,10 @@ public class Venda {
 
     public double getValorTotal() {
         return valorTotal;
+    }
+
+    public List<Pagamento> getPagamentos() {
+        return pagamentos;
     }
 
     public void adicionarProduto(Produto produto, int quantidade) {
@@ -119,27 +123,13 @@ public class Venda {
         return false;
     }
 
-    public void adicionarPagamento(Pagamento pagamento) {
-        if (pagamentos == null) {
-            pagamentos = new ArrayList<>();
-        }
-        pagamentos.add(pagamento);
-    }
-
-    public List<Pagamento> getPagamentos() {
-        return pagamentos;
-    }
-
-    public void removerProduto(Long idProduto) {
-        produtos.removeIf(pv -> pv.getProduto().getId().equals(idProduto));
-    }
-
     public double valorTotal() {
-        double total = 0.0;
-        for (VendaProduto pv : produtos) {
-            total += pv.getProduto().getPreco() * pv.getQuantidade();
+        if (valorTotal == 0.0 && !produtos.isEmpty()) {
+            for (VendaProduto pv : produtos) {
+                valorTotal += pv.getProduto().getPreco() * pv.getQuantidade();
+            }
         }
-        return total;
+        return valorTotal;
     }
 
     private VendaProduto encontrarProdutoNaVenda(Long idProduto) {
@@ -150,6 +140,6 @@ public class Venda {
         }
         return null;
     }
-
-
 }
+
+

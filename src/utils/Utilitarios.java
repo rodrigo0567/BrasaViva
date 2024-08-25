@@ -6,18 +6,16 @@ import model.Produto;
 
 import java.util.List;
 
-public class CardapioUtil {
+public class Utilitarios {
     private BrasaVivaCRUD crud;
 
-    public CardapioUtil(BrasaVivaCRUD crud) {
+    public Utilitarios(BrasaVivaCRUD crud) {
         this.crud = crud;
     }
 
-
-
     public void visualizarCardapio() {
         List<Produto> produtos = crud.listarTodosProdutos();
-        System.out.println("\n--- Produtos Disponíveis ---");
+        System.out.println("\n--- Produtos Disponíveis ---\n");
 
         for (Produto produto : produtos) {
             Estoque estoque = crud.buscarEstoquePorProduto(produto.getId());
@@ -28,8 +26,17 @@ public class CardapioUtil {
                         "\nPreço: R$ " + String.format("%.2f", produto.getPreco()) +
                         "\nQuantidade disponível: " + estoque.getQuantidadeDisponivel() + "\n"
                 );
+                System.out.print("--------------------------\n");
             }
         }
+    }
+
+    public static String formatarCPF(String cpf) {
+        return cpf.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
+    }
+
+    public static String formatarTelefone(String telefone) {
+        return telefone.replaceAll("(\\d{2})(\\d{5})(\\d{4})", "($1) $2-$3");
     }
 
 //    public void gerarComanda(Cliente cliente) {

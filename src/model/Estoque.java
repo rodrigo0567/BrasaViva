@@ -11,6 +11,16 @@ public class Estoque {
         this.quantidadeDisponivel = quantidadeDisponivel;
     }
 
+    public Estoque(Produto produto, int quantidadeDisponivel) {
+        this.produto = produto;
+        this.quantidadeDisponivel = quantidadeDisponivel;
+    }
+
+    public Estoque(Long idProduto, int quantidadeDisponivel) {
+        this.id = idProduto;
+        this.quantidadeDisponivel = quantidadeDisponivel;
+    }
+
     public Long getId() {
         return id;
     }

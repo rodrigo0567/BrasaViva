@@ -44,8 +44,7 @@ public class BrasaVivaCRUD {
         }
     }
 
-    // alterar cliente - função delegada a área de gerente
-    public void atualizarCliente(Cliente cliente) {
+    public void atualizarCliente(Cliente cliente) throws SQLException {
         String sql = "UPDATE cliente SET nome = ?, cpf = ?, email = ?, telefone = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, cliente.getNome());
@@ -53,12 +52,7 @@ public class BrasaVivaCRUD {
             stmt.setString(3, cliente.getEmail());
             stmt.setString(4, cliente.getTelefone());
             stmt.setLong(5, cliente.getId());
-            int rowsUpdated = stmt.executeUpdate();
-            if (rowsUpdated > 0) {
-                System.out.println("Cliente atualizado com sucesso!");
-            } else {
-                System.out.println("Cliente não encontrado para atualização.");
-            }
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -183,7 +177,7 @@ public class BrasaVivaCRUD {
     public void inserirEstoque(Estoque estoque) {
         String sql = "INSERT INTO estoque (id_produto, quantidade_disponivel) VALUES (?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setLong(1, estoque.getId());
+            stmt.setLong(1, estoque.getProduto().getId());
             stmt.setInt(2, estoque.getQuantidadeDisponivel());
             stmt.executeUpdate();
             System.out.println("Estoque inserido com sucesso!");
@@ -285,18 +279,26 @@ public class BrasaVivaCRUD {
 
     // ------------------------------------CRUD_PRODUTO------------------------------------------
 
-//        public void inserirProduto(Produto produto) {
-//        String sql = "INSERT INTO produtos (nome, preco, quantidade) VALUES (?, ?, ?)";
-//        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-//            stmt.setString(1, produto.getNome());
-//            stmt.setDouble(2, produto.getPreco());
-//            stmt.setInt(3, produto.getQuantidade());
-//            stmt.executeUpdate();
-//            System.out.println("Produto inserido com sucesso!");
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public Long inserirProduto(Produto produto) throws SQLException {
+        String sql = "INSERT INTO produto (nome, preco) VALUES (?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, produto.getNome());
+            stmt.setDouble(2, produto.getPreco());
+
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Failed to insert product, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getLong(1); // Retorna o ID gerado
+                } else {
+                    throw new SQLException("Failed to retrieve the generated ID.");
+                }
+            }
+        }
+    }
 
     public void atualizarProduto(Produto produto) {
         String sql = "UPDATE produto SET nome = ?, preco = ? WHERE id = ?";
@@ -386,7 +388,6 @@ public class BrasaVivaCRUD {
         return produto;
     }
 
-
     // ----------------------------------FIM_CRUD_PRODUTO----------------------------------------
 
     // -------------------------------------CRUD_VENDA-------------------------------------------
@@ -424,7 +425,6 @@ public class BrasaVivaCRUD {
         }
     }
 
-
     public List<Venda> listarTodasVendas() throws SQLException {
         List<Venda> vendas = new ArrayList<>();
         String sql = "SELECT * FROM venda";
@@ -439,10 +439,52 @@ public class BrasaVivaCRUD {
                 double valorTotal = rs.getDouble("valor_total");
 
                 Venda venda = new Venda(id, idCliente, dataVenda, valorTotal);
+                carregarProdutosParaVenda(venda);
                 vendas.add(venda);
             }
         }
         return vendas;
+    }
+
+    private void carregarProdutosParaVenda(Venda venda) throws SQLException {
+        List<VendaProduto> produtos = new ArrayList<>();
+        String sql = "SELECT * FROM venda_produto WHERE id_venda = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, venda.getId());
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Long idProduto = rs.getLong("id_produto");
+                    int quantidade = rs.getInt("quantidade");
+
+                    Produto produto = carregarProdutoPorId(idProduto);
+
+                    VendaProduto vendaProduto = new VendaProduto();
+                    vendaProduto.setProduto(produto);
+                    vendaProduto.setQuantidade(quantidade);
+
+                    produtos.add(vendaProduto);
+                }
+            }
+        }
+        venda.setProdutos(produtos);
+    }
+
+    private Produto carregarProdutoPorId(Long id) throws SQLException {
+        Produto produto = new Produto();
+        String sql = "SELECT * FROM produto WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    produto.setId(rs.getLong("id"));
+                    produto.setNome(rs.getString("nome"));
+                    produto.setPreco(rs.getDouble("preco"));
+                }
+            }
+        }
+        return produto;
     }
 
     // -----------------------------------FIM_CRUD_VENDA-----------------------------------------
@@ -461,7 +503,6 @@ public class BrasaVivaCRUD {
             e.printStackTrace();
         }
     }
-
 
     public void atualizarPagamento(Pagamento pagamento) {
         String sql = "UPDATE pagamentos SET valor = ?, metodo = ?, data_pagamento = ? WHERE id = ?";

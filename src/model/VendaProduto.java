@@ -4,6 +4,10 @@ public class VendaProduto {
     private Produto produto;
     private int quantidade;
 
+    public VendaProduto() {
+
+    }
+
     public VendaProduto(Produto produto, int quantidade) {
         this.produto = produto;
         this.quantidade = quantidade;
@@ -25,3 +29,4 @@ public class VendaProduto {
         this.quantidade = quantidade;
     }
 }
+

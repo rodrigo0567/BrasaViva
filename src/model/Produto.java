@@ -13,6 +13,11 @@ public class Produto {
         this.nome = nome;
     }
 
+    public Produto(String nome, double preco) {
+        this.preco = preco;
+        this.nome = nome;
+    }
+
     public Long getId() {
         return id;
     }
@@ -35,16 +40,6 @@ public class Produto {
 
     public void setNome(String nome) {
         this.nome = nome;
-    }
-
-    // Método para calcular o valor total de um produto baseado na quantidade
-    public double calcularValorTotal(int quantidade) {
-        return this.preco * quantidade;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Produto{id=%d, nome='%s', preco=%.2f}", id, nome, preco);
     }
 
 }

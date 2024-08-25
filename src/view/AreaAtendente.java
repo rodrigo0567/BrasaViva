@@ -3,8 +3,8 @@ package view;
 import java.util.List;
 import dao.BrasaVivaCRUD;
 import model.Cliente;
-import service.ControleVenda;
-import utils.CardapioUtil;
+import controller.ControleVenda;
+import utils.Utilitarios;
 
 import java.util.Scanner;
 
@@ -12,12 +12,16 @@ public class AreaAtendente {
 
     private Scanner sc = new Scanner(System.in);
     private BrasaVivaCRUD crud = new BrasaVivaCRUD();
-    private CardapioUtil cardapioUtil = new CardapioUtil(crud);
+    private Utilitarios cardapioUtil = new Utilitarios(crud);
+
+    public AreaAtendente(BrasaVivaCRUD crud) {
+        this.crud = crud;
+    }
 
     public String areaDoAtendente() {
         while(true) {
             System.out.println("\n=*=*=* Área do Atendente =*=*=*\n");
-            System.out.println("1. Cadastro de Cliente");
+            System.out.println("1. Cadastrar Cliente");
             System.out.println("2. Realizar Venda");
             System.out.println("3. Visualizar Cardápio");
             System.out.println("4. Sair da Área do Atendente");
@@ -44,6 +48,8 @@ public class AreaAtendente {
     }
 
     private void cadastrarCliente() {
+        System.out.println("\n=*=*=* Cadastro do Cliente =*=*=*\n");
+        System.out.println("Insira as informações a baixo:");
         System.out.print("\nNome: ");
         String nome = sc.nextLine();
 
@@ -57,24 +63,23 @@ public class AreaAtendente {
                 System.out.println("CPF inválido. Deve conter apenas 11 dígitos.");
             }
         }
-        cpf = formatarCPF(cpf);
+        cpf = Utilitarios.formatarCPF(cpf);
 
         System.out.print("Email: ");
         String email = sc.nextLine();
         System.out.print("Telefone: ");
         String telefone = sc.nextLine();
+        telefone = Utilitarios.formatarTelefone(telefone);
 
         Cliente novoCliente = new Cliente(null, nome, cpf, email, telefone);
         crud.inserirCliente(novoCliente);
         System.out.println("Cliente cadastrado com sucesso!");
     }
 
-    private String formatarCPF(String cpf) {
-        return cpf.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
-    }
 
     private void realizarVenda() {
-        System.out.print("Insira o CPF do cliente atendido: ");
+        System.out.println("\n=*=*=* Login Cliente =*=*=*\n");
+        System.out.print("Insira o CPF do Cliente: ");
         String cpfLogin = sc.nextLine().replaceAll("[^\\d]", "");
 
         if (cpfLogin.length() != 11) {
@@ -82,15 +87,13 @@ public class AreaAtendente {
             return;
         }
 
-        cpfLogin = formatarCPF(cpfLogin);
-
+        cpfLogin = Utilitarios.formatarCPF(cpfLogin);
         List<Cliente> clientesEncontrados = crud.pesquisarClienteCPF(cpfLogin);
 
         if (clientesEncontrados.size() == 1) {
             Cliente clienteLogado = clientesEncontrados.get(0);
             System.out.println("\nCliente encontrado com sucesso!");
             ControleVenda controleVenda = new ControleVenda(sc, crud, clienteLogado);
-            //método processarVenda abre outra tela
             controleVenda.processarVenda();
         } else if (clientesEncontrados.isEmpty()) {
             System.out.println("Cliente não encontrado com o CPF fornecido");
@@ -98,5 +101,4 @@ public class AreaAtendente {
             System.out.println("Mais de um cliente encontrado com esse CPF. Por favor, contate o suporte");
         }
     }
-
 }

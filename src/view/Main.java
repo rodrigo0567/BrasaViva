@@ -11,7 +11,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         BrasaVivaCRUD crud = new BrasaVivaCRUD();
 
-        AreaAtendente areaAtendente = new AreaAtendente();
+        AreaAtendente areaAtendente = new AreaAtendente(crud);
         AreaGerente areaGerente = new AreaGerente();
 
         while (true) {
