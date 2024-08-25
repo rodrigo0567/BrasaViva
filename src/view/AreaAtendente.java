@@ -115,7 +115,7 @@ public class AreaAtendente {
         if (clientesEncontrados != null) {
             if (clientesEncontrados.size() == 1) {
                 Cliente clienteLogado = clientesEncontrados.get(0);
-                System.out.println("\nCliente encontrado com sucesso!");
+                System.out.println("Cliente encontrado com sucesso!");
                 ControleVenda controleVenda = new ControleVenda(sc, crud, clienteLogado);
                 controleVenda.processarVenda();
             } else if (clientesEncontrados.isEmpty()) {

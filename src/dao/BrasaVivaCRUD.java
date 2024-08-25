@@ -350,13 +350,33 @@ public class BrasaVivaCRUD {
         return produtos;
     }
 
-    public Produto exibirUmProduto(Long id) {
+    public Produto exibirUmProdutoPorId(Long id) {
         Produto produto = null;
         String sql = "SELECT * FROM produto WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+                produto = new Produto(
+                        rs.getLong("id"),
+                        rs.getString("nome"),
+                        rs.getDouble("preco")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return produto;
+    }
+
+    public Produto exibirUmProdutoPorNome(String nomeProduto) {
+        Produto produto = null;
+        String sql = "SELECT * FROM produto WHERE nome = ?";
+
+        try(PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, nomeProduto);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()) {
                 produto = new Produto(
                         rs.getLong("id"),
                         rs.getString("nome"),
@@ -507,7 +527,6 @@ public class BrasaVivaCRUD {
             stmt.setDouble(1, pagamento.getValorPago());
             stmt.setString(2, pagamento.getMetodoPagamento());
             stmt.setDate(3, new java.sql.Date(pagamento.getDataPagamento().getTime()));
-            stmt.setLong(4, pagamento.getId());
             stmt.executeUpdate();
             System.out.println("Pagamento atualizado com sucesso!");
         } catch (SQLException e) {

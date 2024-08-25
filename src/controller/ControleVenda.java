@@ -44,7 +44,7 @@ public class ControleVenda {
                     finalizarVenda();
                     break;
                 case 6:
-                    System.out.println("Venda cancelada");
+                    cancelarVenda();
                     break;
                 case 7:
                     areaAtendente.areaDoAtendente();
@@ -58,7 +58,7 @@ public class ControleVenda {
     }
 
     private void exibirMenu() {
-        System.out.println("--- Menu de Vendas ---\n");
+        System.out.println("\n--- Menu de Vendas ---\n");
         System.out.println("1. Visualizar Cardápio");
         System.out.println("2. Adicionar Produto à Venda");
         System.out.println("3. Alterar Produto da Venda");
@@ -116,15 +116,35 @@ public class ControleVenda {
 
     private Produto selecionarProduto() {
         System.out.println("\n=*=*=* Seleção de Compra =*=*=*\n");
-        System.out.print("Insira o ID do Produto a ser comprado: ");
+        System.out.println("Deseja buscar o produto por:");
+        System.out.println("1. ID");
+        System.out.println("2. Nome");
+        System.out.print("Resposta: ");
+        int escolha = sc.nextInt();
+        sc.nextLine();
+
+        Produto produto = null;
+
         try {
-            long idProduto = sc.nextLong();
-            sc.nextLine(); // Limpa o buffer
-            Produto produto = crud.exibirUmProduto(idProduto);
+            switch (escolha) {
+                case 1:
+                    System.out.print("\nInsira o ID do Produto: ");
+                    long idProduto = sc.nextLong();
+                    sc.nextLine(); // Limpa o buffer
+                    produto = crud.exibirUmProdutoPorId(idProduto);
+                    break;
+                case 2:
+                    System.out.print("\nInsira o Nome do Produto: ");
+                    String nomeProduto = sc.nextLine();
+                    produto = crud.exibirUmProdutoPorNome(nomeProduto);
+                    break;
+                default:
+                    System.out.println("Opção inválida. Selecione 1. ID ou 2. Nome");
+                    break;
+            }
 
             if (produto != null) {
                 System.out.println("Produto selecionado: " + produto.getNome());
-                // lógica para confirmar se esse mesmo o produto
                 return produto;
 
             } else {
@@ -163,15 +183,14 @@ public class ControleVenda {
     private void alterarProdutoDaVenda() {
         visualizarProdutosSelecionados();
 
-        System.out.print("Insria o ID do Produto que Deseja Alterar: ");
+        System.out.print("\nInsria o ID do Produto que Deseja Alterar: ");
         long idProduto = sc.nextLong();
-        Produto produto = crud.exibirUmProduto(idProduto);
+        Produto produto = crud.exibirUmProdutoPorId(idProduto);
         Estoque estoque = crud.buscarEstoquePorProduto(idProduto);
 
         if (produto != null) {
             System.out.println("Produto Selecionado: " + produto.getNome());
-            System.out.println("Quantidade: " + estoque.getQuantidadeDisponivel());
-            // lógica para confirmar se esse mesmo o produto
+
         } else {
             System.out.println("Produto Não Encontrado.");
         }
@@ -181,7 +200,7 @@ public class ControleVenda {
             return;
         }
 
-        System.out.print("\nSelecione uma opção: ");
+        System.out.println("\nSelecione uma opção: ");
         System.out.println("1. Adicionar Quantidade");
         System.out.println("2. Subtrair Quantidade");
         System.out.print("Resposta: ");
@@ -193,7 +212,7 @@ public class ControleVenda {
             return;
         }
 
-        System.out.println("Insira a Quantidade: ");
+        System.out.print("Insira a Quantidade: ");
         int quantidadeAlterar = sc.nextInt();
 
         if (quantidadeAlterar <= 0) {
@@ -237,7 +256,7 @@ public class ControleVenda {
                     "\nPreço Unitário: R$ " + String.format("%.2f", pv.getProduto().getPreco()) +
                     "\nPreço Total: R$ " +  String.format("%.2f", precoTotalProduto)
             );
-            System.out.println("-----------------------------\n");
+            System.out.println("------------------------------");
         }
         System.out.println("Preço Final do Pedido: R$ " + String.format("%.2f", precoTotalPedido));
     }
@@ -309,5 +328,12 @@ public class ControleVenda {
 
         Pagamento pagamento = new Pagamento(venda, valorTotal, metodoPagamento);
         crud.inserirPagamento(pagamento);
+    }
+
+    private void cancelarVenda() {
+        System.out.println("Venda cancelada com sucesso. Nenhum dado foi salvo.");
+        // Limpa os produtos e pagamentos associados à venda
+        venda.getProdutos().clear();
+        venda.getPagamentos().clear();
     }
 }

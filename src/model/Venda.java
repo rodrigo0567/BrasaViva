@@ -13,13 +13,6 @@ public class Venda {
     private List<Pagamento> pagamentos;
     private final Date dataVenda;
 
-    public Venda(long id) {
-        this.id = id;
-        this.produtos = new ArrayList<>();
-        this.pagamentos = new ArrayList<>();
-        this.dataVenda = new Date(); // Set to current date
-    }
-
     public Venda() {
         this.produtos = new ArrayList<>();
         this.pagamentos = new ArrayList<>();
@@ -59,10 +52,6 @@ public class Venda {
         this.idAtendente = idAtendente;
     }
 
-    public List<VendaProduto> getProdutos() {
-        return produtos;
-    }
-
     public void setProdutos(List<VendaProduto> produtos) {
         if (produtos == null) {
             throw new IllegalArgumentException("Lista de produtos não pode ser nula.");
@@ -81,6 +70,10 @@ public class Venda {
 
     public double getValorTotal() {
         return valorTotal;
+    }
+
+    public List<VendaProduto> getProdutos() {
+        return produtos;
     }
 
     public List<Pagamento> getPagamentos() {

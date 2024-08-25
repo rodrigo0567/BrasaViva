@@ -26,7 +26,7 @@ public class Utilitarios {
                         "\nPreço: R$ " + String.format("%.2f", produto.getPreco()) +
                         "\nQuantidade disponível: " + estoque.getQuantidadeDisponivel() + "\n"
                 );
-                System.out.print("--------------------------\n");
+                System.out.print("----------------------------");
             }
         }
     }
@@ -38,23 +38,4 @@ public class Utilitarios {
     public static String formatarTelefone(String telefone) {
         return telefone.replaceAll("(\\d{2})(\\d{5})(\\d{4})", "($1) $2-$3");
     }
-
-//    public void gerarComanda(Cliente cliente) {
-//        System.out.println("\n--- Comanda ---\n");
-//        System.out.println("Cliente Nome: " + cliente.getNome());
-//        System.out.println("Cliente CPF: " + cliente.getCpf());
-//        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-//        Date dataVenda;
-//        System.out.println("Data: " + sdf.format(dataVenda));
-//        System.out.println("Produtos: ");
-//
-//        for (ProdutoVenda pv : produtos) {
-//            Produto produto = pv.getProduto();
-//            System.out.println(produto.getNome() + " - Quantidade: " + pv.getQuantidade() + " - Preço unitário: R$ " + produto.getPreco());
-//        }
-//
-//        double valorTotal = calcularValorTotal();
-//        System.out.println("\nValor total: R$ " + valorTotal);
-//        System.out.println("===================");
-//    }
 }

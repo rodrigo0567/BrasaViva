@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Pagamento {
-    private Long id;
     private Venda venda;
     private double valorPago;
     private String metodoPagamento;
@@ -15,10 +14,6 @@ public class Pagamento {
         this.valorPago = valorPago;
         this.metodoPagamento = metodoPagamento;
         this.dataPagamento = new Date();
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public Venda getVenda() {
@@ -52,12 +47,7 @@ public class Pagamento {
         return dataPagamento;
     }
 
-    @Override
-    public String toString() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        return "Pagamento [id=" + id + ", idVenda=" + (venda != null ? venda.getId() : "null") +
-                ", valorPago=" + valorPago + ", metodoPagamento=" + metodoPagamento +
-                ", dataPagamento=" + sdf.format(dataPagamento) + "]";
+    public void setDataPagamento(Date dataPagamento) {
+        this.dataPagamento = dataPagamento;
     }
-
 }

@@ -273,17 +273,21 @@ public class AreaGerente {
 
                 double valorTotalVenda = venda.valorTotal();
                 System.out.println("Venda ID: " + venda.getId() +
-                        "\nData: " + venda.getDataVenda() +
-                        "\n"
+                        "\nData: " + venda.getDataVenda() + "\n"
                 );
 
                 for (VendaProduto vendaProduto : produtosVenda) {
                     Produto produto = vendaProduto.getProduto();
                     System.out.println("Nome do Produto: " + produto.getNome() +
                             "\nPreço do Produto: R$ " + String.format("%.2f", produto.getPreco()) +
-                            "\nQuantidade do Produto: " + vendaProduto.getQuantidade() +
-                            "\n"
+                            "\nQuantidade do Produto: " + vendaProduto.getQuantidade() + "\n"
                     );
+                }
+
+                List<Pagamento> pagamentos = venda.getPagamentos();
+                System.out.print("\nMétodo de Pagamento: ");
+                for (Pagamento pagamento : pagamentos) {
+                    System.out.println("- " + pagamento.getMetodoPagamento());
                 }
 
                 System.out.println("Valor Total da Venda: R$ " + String.format("%.2f", valorTotalVenda));
