@@ -116,7 +116,7 @@ public class ControleVenda {
 
     private Produto selecionarProduto() {
         System.out.println("\n=*=*=* Seleção de Compra =*=*=*\n");
-        System.out.print("\nInsira o ID do Produto a ser comprado: ");
+        System.out.print("Insira o ID do Produto a ser comprado: ");
         try {
             long idProduto = sc.nextLong();
             sc.nextLine(); // Limpa o buffer
@@ -226,18 +226,18 @@ public class ControleVenda {
     }
 
     private void visualizarProdutosSelecionados() {
-        System.out.println("\n--- Produtos Selecionados ---");
+        System.out.println("\n--- Produtos Selecionados ---\n");
         double precoTotalPedido = 0.0;
         for (VendaProduto pv : venda.getProdutos()) {
             double precoTotalProduto = pv.getProduto().getPreco() * pv.getQuantidade();
             precoTotalPedido += precoTotalProduto;
-            System.out.println("ID: " + pv.getProduto().getId() + "Produto: " + pv.getProduto().getNome() +
+            System.out.println("ID: " + pv.getProduto().getId() +
+                    "\nProduto: " + pv.getProduto().getNome() +
                     "\nQuantidade: " + pv.getQuantidade() +
                     "\nPreço Unitário: R$ " + String.format("%.2f", pv.getProduto().getPreco()) +
-                    "\nPreço Total: R$ " +  String.format("%.2f", precoTotalProduto) + "\n"
-
+                    "\nPreço Total: R$ " +  String.format("%.2f", precoTotalProduto)
             );
-            System.out.println("\n-----------------------------");
+            System.out.println("-----------------------------\n");
         }
         System.out.println("Preço Final do Pedido: R$ " + String.format("%.2f", precoTotalPedido));
     }
@@ -279,7 +279,7 @@ public class ControleVenda {
 
     private void inserirPagamento(Venda venda) throws SQLException {
 
-        System.out.println("Selecione a opção de pagamento: ");
+        System.out.println("\nSelecione a opção de pagamento: ");
         System.out.println("1. Dinheiro");
         System.out.println("2. Cartão");
         System.out.print("Resposta: ");
@@ -294,7 +294,7 @@ public class ControleVenda {
         double valorTotal = venda.valorTotal();
 
         if (opPagamento == 1) {
-            System.out.println("Digite o Valor Pago em Espécie: ");
+            System.out.print("Digite o Valor Pago em Espécie: ");
             double valorRecebido = sc.nextDouble();
             sc.nextLine();
 
@@ -309,6 +309,5 @@ public class ControleVenda {
 
         Pagamento pagamento = new Pagamento(venda, valorTotal, metodoPagamento);
         crud.inserirPagamento(pagamento);
-        System.out.println("Pagamento em Realizado com sucesso!");
     }
 }

@@ -26,8 +26,6 @@ public class BrasaVivaCRUD {
         }
     }
 
-    // Para se guiar melhor (ctrl + f) Ex: CRUD_CLIENTE, que facilitará achar os métodos disponíveis para cada classe.
-
     // ------------------------------------CRUD_CLIENTE------------------------------------------
 
     public void inserirCliente(Cliente cliente) {
@@ -323,7 +321,7 @@ public class BrasaVivaCRUD {
             stmt.setLong(1, id);
             int rowsDeleted = stmt.executeUpdate();
             if (rowsDeleted > 0) {
-                System.out.println("model.Produto removido com sucesso!");
+                System.out.println("Produto removido com sucesso!");
             } else {
                 System.out.println("Nenhum produto encontrado com o ID especificado.");
             }
@@ -498,7 +496,6 @@ public class BrasaVivaCRUD {
             stmt.setDouble(2, pagamento.getValorPago());
             stmt.setString(3, pagamento.getMetodoPagamento());
             stmt.executeUpdate();
-            System.out.println("Pagamento inserido com sucesso!");
         } catch (SQLException e) {
             e.printStackTrace();
         }

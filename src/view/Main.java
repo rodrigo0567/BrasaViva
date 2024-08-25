@@ -35,7 +35,6 @@ public class Main {
                     System.out.println("Saindo do sistema...");
                     sc.close();
                     return;
-
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
                     break;
