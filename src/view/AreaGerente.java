@@ -8,7 +8,7 @@ import utils.Utilitarios;
 
 import java.util.Scanner;
 
-public class InterfaceAreaGerente {
+public class AreaGerente {
 
     private Scanner sc = new Scanner(System.in);
     private BrasaVivaCRUD crud = new BrasaVivaCRUD();
@@ -54,8 +54,8 @@ public class InterfaceAreaGerente {
         System.out.println("2. Remover Produto do Banco de Dados");
         System.out.println("3. Alterar Informações de Produto");
         System.out.println("4. Alterar Estoque");
-        System.out.println("5. Voltar Aara Área do Gerente");
-        System.out.print("Selecione uma opção:");
+        System.out.println("5. Voltar Para Área do Gerente");
+        System.out.print("Selecione uma opção: ");
         int opcao = sc.nextInt();
         sc.nextLine();
 
@@ -266,7 +266,7 @@ public class InterfaceAreaGerente {
         System.out.println("Buscar Cliente por:");
         System.out.println("1. CPF");
         System.out.println("2. Nome");
-        System.out.print("Resposta: ");
+        System.out.print("Selecione uma Opção: ");
         int opcao = sc.nextInt();
         sc.nextLine();
         List<Cliente> clientesEncontrados = null;
@@ -343,7 +343,7 @@ public class InterfaceAreaGerente {
         System.out.println("Buscar Cliente por:");
         System.out.println("1. CPF");
         System.out.println("2. Nome");
-        System.out.print("Resposta: ");
+        System.out.print("Selecione uma resposta: ");
         int opcao = sc.nextInt();
         sc.nextLine();
         List<Cliente> clientesEncontrados = null;
@@ -377,8 +377,16 @@ public class InterfaceAreaGerente {
             Cliente cliente = clientesEncontrados.get(0);
             System.out.println("Cliente encontrado: " + cliente.getNome());
 
-            crud.removerCliente(cliente.getId());
-            System.out.println("Cliente removido com sucesso!");
+            try {
+                if(crud.temVendasAssociadas(cliente.getId())) {
+                    System.out.println("O cliente não pode ser removido porque existem vendas associadas a ele");
+                } else {
+                    crud.removerCliente(cliente.getId());
+                    System.out.println("Cliente removido com sucesso!");
+                }
+            } catch (SQLException e) {
+                System.err.println("Erro ao remover o cliente: " + e.getMessage());
+            }
 
         } else if (clientesEncontrados == null || clientesEncontrados.isEmpty()) {
             System.out.println("Cliente não encontrado com as informações fornecidas.");
@@ -426,18 +434,11 @@ public class InterfaceAreaGerente {
                         "\nData: " + venda.getDataVenda() + "\n"
                 );
 
-                for (VendaProduto vendaProduto : produtosVenda) {
-                    Produto produto = vendaProduto.getProduto();
-                    System.out.println("Nome do Produto: " + produto.getNome() +
-                            "\nPreço do Produto: R$ " + String.format("%.2f", produto.getPreco()) +
+                for (VendaProduto vendaProduto : venda.getProdutos()) {
+                    System.out.println("Nome do Produto: " + vendaProduto.getProduto().getNome() +
+                            "\nPreço do Produto (no momento da venda): R$ " + String.format("%.2f", vendaProduto.getPrecoVenda()) +
                             "\nQuantidade do Produto: " + vendaProduto.getQuantidade() + "\n"
                     );
-                }
-
-                List<Pagamento> pagamentos = venda.getPagamentos();
-                System.out.print("\nMétodo de Pagamento: ");
-                for (Pagamento pagamento : pagamentos) {
-                    System.out.println("- " + pagamento.getMetodoPagamento());
                 }
 
                 System.out.println("Valor Total da Venda: R$ " + String.format("%.2f", valorTotalVenda));

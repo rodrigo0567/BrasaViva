@@ -12,7 +12,7 @@ public class InterfaceVenda {
     private final Venda venda;
     private BrasaVivaCRUD crud = new BrasaVivaCRUD();
     private Utilitarios cardapioUtil = new Utilitarios(crud);
-    InterfaceAreaAtendente areaAtendente = new InterfaceAreaAtendente(crud);
+    AreaAtendente areaAtendente = new AreaAtendente(crud);
 
     public InterfaceVenda(Scanner sc, BrasaVivaCRUD crud, Cliente cliente) {
         this.sc = sc;
@@ -48,8 +48,6 @@ public class InterfaceVenda {
                 case 7:
                     areaAtendente.areaDoAtendente();
                     break;
-                case 8:
-                    return;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
             }
@@ -103,8 +101,11 @@ public class InterfaceVenda {
             }
 
             if (estoqueProduto.getQuantidadeDisponivel() >= quantidade) {
-                venda.adicionarProduto(produtoEscolhido, quantidade);
+                double precoVenda = produtoEscolhido.getPreco();
+                VendaProduto vp = new VendaProduto(produtoEscolhido, quantidade, precoVenda);
+                venda.adicionarProduto(vp);
                 System.out.println("Produto adicionado à compra com sucesso!");
+                System.out.println("Produto: " + produtoEscolhido.getNome() + " | Preço: " + precoVenda); // Print de depuração
             } else {
                 System.out.println("Quantidade insuficiente no estoque.");
             }
@@ -184,14 +185,14 @@ public class InterfaceVenda {
 
         System.out.print("\nInsria o ID do Produto que Deseja Alterar: ");
         long idProduto = sc.nextLong();
+        sc.nextLine();
+
         Produto produto = crud.exibirUmProdutoPorId(idProduto);
         Estoque estoque = crud.buscarEstoquePorProduto(idProduto);
 
-        if (produto != null) {
-            System.out.println("Produto Selecionado: " + produto.getNome());
-
-        } else {
+        if (produto == null) {
             System.out.println("Produto Não Encontrado.");
+            return;
         }
 
         if (estoque == null) {
@@ -199,12 +200,13 @@ public class InterfaceVenda {
             return;
         }
 
+        System.out.println("Produto Selecionado: " + produto.getNome());
+
         System.out.println("\nSelecione uma opção: ");
         System.out.println("1. Adicionar Quantidade");
         System.out.println("2. Subtrair Quantidade");
         System.out.print("Resposta: ");
-        int op = sc.nextInt();
-        sc.nextLine();
+        int op = lerOpcao();
 
         if (op != 1 && op != 2) {
             System.out.println("Opção Inválida!");

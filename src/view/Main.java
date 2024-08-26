@@ -11,8 +11,8 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         BrasaVivaCRUD crud = new BrasaVivaCRUD();
 
-        InterfaceAreaAtendente areaAtendente = new InterfaceAreaAtendente(crud);
-        InterfaceAreaGerente areaGerente = new InterfaceAreaGerente();
+        AreaAtendente areaAtendente = new AreaAtendente(crud);
+        AreaGerente areaGerente = new AreaGerente();
 
         while (true) {
             System.out.println("\nBRASA VIVA CHURRASCARIA");
@@ -29,7 +29,10 @@ public class Main {
                     areaGerente.areaDoGerente();
                     break;
                 case 2:
-                    areaAtendente.areaDoAtendente();
+                    boolean voltarMenuInicial = areaAtendente.areaDoAtendente();
+                    if (voltarMenuInicial) {
+                        continue;  // Volta para o menu inicial
+                    }
                     break;
                 case 3:
                     System.out.println("Saindo do sistema...");

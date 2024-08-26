@@ -7,23 +7,23 @@ import utils.Utilitarios;
 
 import java.util.Scanner;
 
-public class InterfaceAreaAtendente {
+public class AreaAtendente {
 
     private Scanner sc = new Scanner(System.in);
     private BrasaVivaCRUD crud = new BrasaVivaCRUD();
     private Utilitarios cardapioUtil = new Utilitarios(crud);
 
-    public InterfaceAreaAtendente(BrasaVivaCRUD crud) {
+    public AreaAtendente(BrasaVivaCRUD crud) {
         this.crud = crud;
     }
 
-    public String areaDoAtendente() {
+    public boolean areaDoAtendente() {
         while (true) {
             System.out.println("\n=*=*=* Área do Atendente =*=*=*\n");
             System.out.println("1. Cadastrar Cliente");
             System.out.println("2. Realizar Venda");
             System.out.println("3. Visualizar Cardápio");
-            System.out.println("4. Sair da Área do Atendente");
+            System.out.println("4. Ir Para Menu Inicial");
             System.out.print("\nSelecione uma opção: ");
             int op = sc.nextInt();
             sc.nextLine();
@@ -39,7 +39,7 @@ public class InterfaceAreaAtendente {
                     cardapioUtil.visualizarCardapio();
                     break;
                 case 4:
-                    return "Saindo...";
+                    return true;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
             }

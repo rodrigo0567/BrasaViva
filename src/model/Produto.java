@@ -9,8 +9,8 @@ public class Produto {
 
     public Produto(Long id, String nome, double preco) {
         this.id = id;
-        this.preco = preco;
         this.nome = nome;
+        this.preco = preco;
     }
 
     public Produto(String nome, double preco) {

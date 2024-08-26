@@ -442,7 +442,7 @@ public class BrasaVivaCRUD {
             stmt.setLong(1, idVenda);
             stmt.setLong(2, vendaProduto.getProduto().getId());
             stmt.setInt(3, vendaProduto.getQuantidade());
-            stmt.setDouble(4, vendaProduto.getProduto().getPreco());
+            stmt.setDouble(4, vendaProduto.getPrecoVenda());
             stmt.executeUpdate();
         }
     }
@@ -478,12 +478,14 @@ public class BrasaVivaCRUD {
                 while (rs.next()) {
                     Long idProduto = rs.getLong("id_produto");
                     int quantidade = rs.getInt("quantidade");
+                    double precoUnitario = rs.getDouble("preco_unitario");
 
                     Produto produto = carregarProdutoPorId(idProduto);
 
                     VendaProduto vendaProduto = new VendaProduto();
                     vendaProduto.setProduto(produto);
                     vendaProduto.setQuantidade(quantidade);
+                    vendaProduto.setPrecoVenda(precoUnitario);
 
                     produtos.add(vendaProduto);
                 }
@@ -507,6 +509,19 @@ public class BrasaVivaCRUD {
             }
         }
         return produto;
+    }
+
+    public boolean temVendasAssociadas(long clienteId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM venda WHERE id_cliente = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, clienteId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
     }
 
     // -----------------------------------FIM_CRUD_VENDA-----------------------------------------
@@ -548,6 +563,5 @@ public class BrasaVivaCRUD {
             e.printStackTrace();
         }
     }
-
     // -----------------------------------FIM_CRUD_PAGAMENTO-----------------------------------------
 }

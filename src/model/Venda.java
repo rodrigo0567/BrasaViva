@@ -80,19 +80,19 @@ public class Venda {
         return pagamentos;
     }
 
-    public void adicionarProduto(Produto produto, int quantidade) {
-        if (produto == null) {
+    public void adicionarProduto(VendaProduto vp) {
+        if (vp == null || vp.getProduto() == null) {
             throw new IllegalArgumentException("Produto não pode ser nulo.");
         }
-        if (quantidade <= 0) {
+        if (vp.getQuantidade() <= 0) {
             throw new IllegalArgumentException("Quantidade deve ser maior que zero");
         }
 
-        VendaProduto produtoVenda = encontrarProdutoNaVenda(produto.getId());
+        VendaProduto produtoVenda = encontrarProdutoNaVenda(vp.getProduto().getId());
         if (produtoVenda != null) {
-            produtoVenda.setQuantidade(produtoVenda.getQuantidade() + quantidade);
+            produtoVenda.setQuantidade(produtoVenda.getQuantidade() + vp.getQuantidade());
         } else {
-            produtos.add(new VendaProduto(produto, quantidade));
+            produtos.add(vp);
         }
     }
 
@@ -117,12 +117,11 @@ public class Venda {
     }
 
     public double valorTotal() {
-        if (valorTotal == 0.0 && !produtos.isEmpty()) {
-            for (VendaProduto pv : produtos) {
-                valorTotal += pv.getProduto().getPreco() * pv.getQuantidade();
-            }
+        double total = 0;
+        for (VendaProduto vp : produtos) {
+            total += vp.getPrecoVenda() * vp.getQuantidade(); // Verifique se está somando corretamente
         }
-        return valorTotal;
+        return total;
     }
 
     private VendaProduto encontrarProdutoNaVenda(Long idProduto) {
