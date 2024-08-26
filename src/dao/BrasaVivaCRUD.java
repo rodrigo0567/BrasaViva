@@ -287,25 +287,28 @@ public class BrasaVivaCRUD {
 
     // ------------------------------------CRUD_PRODUTO------------------------------------------
 
-    public Long inserirProduto(Produto produto) throws SQLException {
-        String sql = "INSERT INTO produto (nome, preco) VALUES (?, ?)";
+    public Long inserirProduto(Produto produto) throws Exception{
+        String sql = "INSERT INTO produto (nome, descricao, preco, categoria) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, produto.getNome());
-            stmt.setDouble(2, produto.getPreco());
+            stmt.setString(2, produto.getDescricao());
+            stmt.setDouble(3, produto.getPreco());
+            stmt.setString(4, produto.getCategoria());
 
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Failed to insert product, no rows affected.");
-            }
-
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getLong(1); // Retorna o ID gerado
-                } else {
-                    throw new SQLException("Failed to retrieve the generated ID.");
+            int rowsInserted = stmt.executeUpdate();
+            if (rowsInserted > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getLong(1); // Retorna o ID gerado
+                    }
                 }
+            } else {
+                System.out.println("Erro ao inserir o produto.");
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return null; // Retorna null se houver erro
     }
 
     public void atualizarProduto(Produto produto) {

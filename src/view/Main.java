@@ -17,6 +17,7 @@ public class Main {
     public static void menuInicial() {
 
         while (true) {
+            System.out.print("-----------------------");
             System.out.println("\nBRASA VIVA CHURRASCARIA");
             System.out.println("\n--- Menu Inicial ---\n");
             System.out.println("1. Área do Gerente");
@@ -31,9 +32,8 @@ public class Main {
                     areaGerente.areaDoGerente();
                     break;
                 case 2:
-                    boolean voltarMenuInicial = areaAtendente.areaDoAtendente();
-                    if (voltarMenuInicial) {
-                        continue;  // Volta para o menu inicial
+                    if (areaAtendente.areaDoAtendente()) {
+                        continue;
                     }
                     break;
                 case 3:

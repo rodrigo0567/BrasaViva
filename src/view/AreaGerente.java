@@ -97,7 +97,7 @@ public class AreaGerente {
             System.out.print("Digite a Categoria do Produto (Comida, Bebida, Acompanhamento): ");
             String categoriaProduto = sc.nextLine();
 
-            if (nomeProduto.isEmpty() || precoProduto <= 0 ||  descricaoProduto.isEmpty() || categoriaProduto.isEmpty()) {
+            if (nomeProduto.isEmpty() || precoProduto <= 0 || descricaoProduto.isEmpty() || categoriaProduto.isEmpty()) {
                 System.out.println("Erro: Nome do produto não pode ser vazio e o preço deve ser maior que zero.");
                 return;
             }
@@ -105,8 +105,6 @@ public class AreaGerente {
             Produto novoProduto = new Produto(nomeProduto, descricaoProduto, precoProduto, categoriaProduto);
 
             Long idProduto = crud.inserirProduto(novoProduto);
-            System.out.println("Novo Produto adicionado com Sucesso!" + "\nID do Produto: " + idProduto);
-
             if (idProduto == null) {
                 System.out.println("Erro ao inserir o produto");
                 return;
@@ -126,6 +124,8 @@ public class AreaGerente {
             }
         } catch (SQLException e) {
             System.out.println("Erro ao adicionar o produto: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erro inesperado: " + e.getMessage());
         }
     }
 
@@ -218,7 +218,6 @@ public class AreaGerente {
         } catch (SQLException e) {
                 System.out.println("Produto não encontrado.");
         }
-
     }
 
     private void alterarEstoque() {
@@ -394,7 +393,7 @@ public class AreaGerente {
                 if(crud.temVendasAssociadas(cliente.getId())) {
                     System.out.println("O cliente não pode ser removido porque existem vendas associadas a ele");
                 } else {
-                    crud.removerCliente(cliente.getId());
+                    crud.removerCliente(cliente.getId()); // revisar depois em questão de nomes duplicados
                     System.out.println("Cliente removido com sucesso!");
                 }
             } catch (SQLException e) {
