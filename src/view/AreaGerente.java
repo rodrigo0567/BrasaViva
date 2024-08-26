@@ -55,7 +55,7 @@ public class AreaGerente {
         System.out.println("3. Alterar Informações de Produto");
         System.out.println("4. Alterar Estoque");
         System.out.println("5. Voltar Para Área do Gerente");
-        System.out.print("Selecione uma opção: ");
+        System.out.print("\nSelecione uma opção: ");
         int opcao = sc.nextInt();
         sc.nextLine();
 

@@ -118,7 +118,7 @@ public class InterfaceVenda {
         System.out.println("Deseja buscar o produto por:");
         System.out.println("1. ID");
         System.out.println("2. Nome");
-        System.out.print("Resposta: ");
+        System.out.print("\nSelecione a opção desejada: ");
         int escolha = sc.nextInt();
         sc.nextLine();
 

@@ -183,7 +183,7 @@ public class BrasaVivaCRUD {
         String sql = "UPDATE estoque SET quantidade_disponivel = ? WHERE id_produto = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, estoque.getQuantidadeDisponivel());
-            stmt.setLong(2, estoque.getId());
+            stmt.setLong(2, estoque.getProduto().getId());
             stmt.executeUpdate();
             System.out.println("Estoque atualizado com sucesso!");
         } catch (SQLException e) {
@@ -214,10 +214,11 @@ public class BrasaVivaCRUD {
     public Estoque buscarEstoquePorProduto(Long idProduto) {
         Estoque estoque = null;
         String sql = "SELECT e.id AS estoque_id, e.quantidade_disponivel, " +
-                "p.id AS produto_id, p.nome AS produto_nome, p.preco AS produto_preco " +
+                "p.id AS produto_id, p.nome AS produto_nome, p.descricao AS produto_descricao, " +
+                "p.preco AS produto_preco, p.categoria AS produto_categoria " +
                 "FROM estoque e " +
                 "JOIN produto p ON e.id_produto = p.id " +
-                "WHERE e.id_produto = ?";
+                "WHERE p.id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, idProduto);
@@ -225,10 +226,12 @@ public class BrasaVivaCRUD {
                 if (rs.next()) {
                     // Cria um objeto Produto com os dados obtidos
                     Produto produto = new Produto(
-                            rs.getLong("produto_id"), // ID do produto
-                            rs.getString("produto_nome"), // Nome do produto
-                            rs.getDouble("produto_preco") // Preço do produto
+                            rs.getString("produto_nome"),
+                            rs.getString("produto_descricao"),
+                            rs.getDouble("produto_preco"),
+                            rs.getString("produto_categoria")
                     );
+                    produto.setId((rs.getLong("produto_id")));
 
                     // Crie um objeto Estoque com os dados obtidos
                     estoque = new Estoque(
@@ -247,7 +250,8 @@ public class BrasaVivaCRUD {
     public List<Estoque> listarTodosEstoques() {
         List<Estoque> estoques = new ArrayList<>();
         String sql = "SELECT e.id AS estoque_id, e.quantidade_disponivel, " +
-                "p.id AS produto_id, p.nome AS produto_nome, p.preco AS produto_preco " +
+                "p.id AS produto_id, p.nome AS produto_nome, p.descricao AS produto_descricao, " +
+                "p.preco AS produto_preco, p.categoria AS produto_categoria " +
                 "FROM estoque e " +
                 "JOIN produto p ON e.id_produto = p.id";
 
@@ -255,14 +259,16 @@ public class BrasaVivaCRUD {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                // Crie um objeto Produto com os dados obtidos
+                // Cria um objeto Produto com os dados obtidos
                 Produto produto = new Produto(
-                        rs.getLong("produto_id"), // ID do produto
                         rs.getString("produto_nome"), // Nome do produto
-                        rs.getDouble("produto_preco") // Preço do produto
+                        rs.getString("produto_descricao"), // Descrição do produto
+                        rs.getDouble("produto_preco"), // Preço do produto
+                        rs.getString("produto_categoria") // Descrição do produto
                 );
+                produto.setId(rs.getLong("produto_id"));
 
-                // Crie um objeto Estoque com os dados obtidos
+                // Cria um objeto Estoque com os dados obtidos
                 Estoque estoque = new Estoque(
                         rs.getLong("estoque_id"), // ID do estoque
                         produto, // Objeto Produto
