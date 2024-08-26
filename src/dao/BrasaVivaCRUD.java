@@ -223,7 +223,7 @@ public class BrasaVivaCRUD {
             stmt.setLong(1, idProduto);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // Crie um objeto Produto com os dados obtidos
+                    // Cria um objeto Produto com os dados obtidos
                     Produto produto = new Produto(
                             rs.getLong("produto_id"), // ID do produto
                             rs.getString("produto_nome"), // Nome do produto
@@ -303,11 +303,13 @@ public class BrasaVivaCRUD {
     }
 
     public void atualizarProduto(Produto produto) {
-        String sql = "UPDATE produto SET nome = ?, preco = ? WHERE id = ?";
+        String sql = "UPDATE produto SET nome = ?, descricao = ?, preco = ?, categoria = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, produto.getNome());
-            stmt.setDouble(2, produto.getPreco());
-            stmt.setLong(3, produto.getId());
+            stmt.setString(2, produto.getDescricao());
+            stmt.setDouble(3, produto.getPreco());
+            stmt.setString(4, produto.getCategoria());
+            stmt.setLong(5, produto.getId());
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {
                 System.out.println("Produto atualizado com sucesso!");
@@ -336,7 +338,7 @@ public class BrasaVivaCRUD {
 
     public List<Produto> listarTodosProdutos() {
         List<Produto> produtos = new ArrayList<>();
-        String sql = "SELECT * FROM produto";
+        String sql = "SELECT id, nome, descricao, preco, categoria FROM produto";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
@@ -344,7 +346,9 @@ public class BrasaVivaCRUD {
                 Produto produto = new Produto(
                         rs.getLong("id"),
                         rs.getString("nome"),
-                        rs.getDouble("preco")
+                        rs.getString("descricao"),
+                        rs.getDouble("preco"),
+                        rs.getString("categoria")
                 );
                 produtos.add(produto);
             }
@@ -359,13 +363,16 @@ public class BrasaVivaCRUD {
         String sql = "SELECT * FROM produto WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                produto = new Produto(
-                        rs.getLong("id"),
-                        rs.getString("nome"),
-                        rs.getDouble("preco")
-                );
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    produto = new Produto(
+                            rs.getLong("id"),
+                            rs.getString("nome"),
+                            rs.getString("descricao"),
+                            rs.getDouble("preco"),
+                            rs.getString("categoria")
+                    );
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

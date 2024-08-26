@@ -84,29 +84,35 @@ public class AreaGerente {
         try {
             System.out.println("\n--- Adicionar Novo Produto ---\n");
 
-            System.out.print("Digite o Nome do Produto: ");
+            System.out.print("Digite o Nome do Novo Produto: ");
             String nomeProduto = sc.nextLine();
 
-            System.out.print("Digite o Preço do Produto (R$): ");
+            System.out.print("Digite a Descrição do Produto: ");
+            String descricaoProduto = sc.nextLine();
+
+            System.out.print("Digite o Preço do Novo Produto (R$): ");
             double precoProduto = sc.nextDouble();
             sc.nextLine();
 
-            if (nomeProduto.isEmpty() || precoProduto <= 0) {
+            System.out.print("Digite a Categoria do Produto (Comida, Bebida, Acompanhamento): ");
+            String categoriaProduto = sc.nextLine();
+
+            if (nomeProduto.isEmpty() || precoProduto <= 0 ||  descricaoProduto.isEmpty() || categoriaProduto.isEmpty()) {
                 System.out.println("Erro: Nome do produto não pode ser vazio e o preço deve ser maior que zero.");
                 return;
             }
 
-            Produto novoProduto = new Produto(nomeProduto, precoProduto);
+            Produto novoProduto = new Produto(nomeProduto, descricaoProduto, precoProduto, categoriaProduto);
 
             Long idProduto = crud.inserirProduto(novoProduto);
-            System.out.println("Produto adicionado com sucesso!" + "\nID do Produto: " + idProduto);
+            System.out.println("Novo Produto adicionado com Sucesso!" + "\nID do Produto: " + idProduto);
 
             if (idProduto == null) {
                 System.out.println("Erro ao inserir o produto");
                 return;
             }
 
-            Produto produtoComId = new Produto(idProduto, nomeProduto, precoProduto);
+            Produto produtoComId = new Produto(idProduto, nomeProduto, descricaoProduto, precoProduto, categoriaProduto);
 
             System.out.print("Digite a Quantidade Inicial em Estoque: ");
             int quantidadeEstoque = sc.nextInt();
@@ -187,6 +193,10 @@ public class AreaGerente {
                 System.out.println("Produto encontrado: " + produto.getNome());
                 System.out.print("Novo nome do produto: ");
                 String novoNome = sc.nextLine();
+                System.out.print("Nova descrição do produto: ");
+                String novaDescricao = sc.nextLine();
+                System.out.print("Nova categoria do produto: ");
+                String novaCategoria = sc.nextLine();
                 System.out.print("Novo preço do produto (R$): ");
                 double novoPreco = sc.nextDouble();
                 sc.nextLine();
@@ -197,6 +207,8 @@ public class AreaGerente {
                 }
 
                 produto.setNome(novoNome);
+                produto.setDescricao(novaDescricao);
+                produto.setCategoria(novaCategoria);
                 produto.setPreco(novoPreco);
 
                 crud.atualizarProduto(produto);
@@ -427,12 +439,14 @@ public class AreaGerente {
 
             for (Venda venda : vendas) {
                 List<VendaProduto> produtosVenda = venda.getProdutos();
-                System.out.println("Produtos Associados a Venda: " + (produtosVenda != null ? produtosVenda.size() : "Lista Nula"));
 
                 double valorTotalVenda = venda.valorTotal();
-                System.out.println("Venda ID: " + venda.getId() +
-                        "\nData: " + venda.getDataVenda() + "\n"
+                System.out.println("ID: " + venda.getId() +
+                        "\nData: " + venda.getDataVenda()
                 );
+
+                System.out.println("Produtos Associados a Venda: " + (produtosVenda != null ? produtosVenda.size() : "Lista Nula"));
+                System.out.println();
 
                 for (VendaProduto vendaProduto : venda.getProdutos()) {
                     System.out.println("Nome do Produto: " + vendaProduto.getProduto().getNome() +
@@ -461,6 +475,8 @@ public class AreaGerente {
         for (Estoque estoque : estoques) {
             System.out.println("ID: " + estoque.getProduto().getId() +
                     "\nProduto: " + estoque.getProduto().getNome() +
+                    "\nDescrição: " + estoque.getProduto().getDescricao() +
+                    "\nCategoria: " + estoque.getProduto().getCategoria() +
                     "\nQuantidade disponível: " + estoque.getQuantidadeDisponivel() +
                     "\nValor Unitário: " + String.format("%.2f", estoque.getProduto().getPreco()) +
                     "\nValor Total em Estoque do Produto: R$ " + String.format("%.2f", estoque.getProduto().getPreco()

@@ -23,7 +23,9 @@ public class Utilitarios {
             if (estoque != null) {
                 System.out.println("\nID: " + produto.getId() +
                         "\nNome: " + produto.getNome() +
+                        "\nDescrição: " + produto.getDescricao() +
                         "\nPreço: R$ " + String.format("%.2f", produto.getPreco()) +
+                        "\nCategoria: " + produto.getCategoria() +
                         "\nQuantidade disponível: " + estoque.getQuantidadeDisponivel() + "\n"
                 );
                 System.out.print("----------------------------");
