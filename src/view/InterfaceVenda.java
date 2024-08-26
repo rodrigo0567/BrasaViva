@@ -105,7 +105,6 @@ public class InterfaceVenda {
                 VendaProduto vp = new VendaProduto(produtoEscolhido, quantidade, precoVenda);
                 venda.adicionarProduto(vp);
                 System.out.println("Produto adicionado à compra com sucesso!");
-                System.out.println("Produto: " + produtoEscolhido.getNome() + " | Preço: " + precoVenda); // Print de depuração
             } else {
                 System.out.println("Quantidade insuficiente no estoque.");
             }
@@ -292,6 +291,8 @@ public class InterfaceVenda {
 
             System.out.println("Venda finalizada com sucesso!");
 
+            AreaAtendente areaAtendente = new AreaAtendente(crud);
+            areaAtendente.areaDoAtendente();
         } catch (SQLException e) {
             System.out.println("Erro ao finalizar venda: " + e.getMessage());
         }

@@ -468,14 +468,14 @@ public class BrasaVivaCRUD {
                 double valorTotal = rs.getDouble("valor_total");
 
                 Venda venda = new Venda(id, idCliente, dataVenda, valorTotal);
-                carregarProdutosParaVenda(venda);
+                buscarProdutosParaVenda(venda);
                 vendas.add(venda);
             }
         }
         return vendas;
     }
 
-    private void carregarProdutosParaVenda(Venda venda) throws SQLException {
+    private void buscarProdutosParaVenda(Venda venda) throws SQLException {
         List<VendaProduto> produtos = new ArrayList<>();
         String sql = "SELECT * FROM venda_produto WHERE id_venda = ?";
 

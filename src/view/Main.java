@@ -1,18 +1,20 @@
 package view;
 
 import dao.BrasaVivaCRUD;
-
 import java.util.Scanner;
 
 public class Main {
 
+    private static Scanner sc = new Scanner(System.in);
+    private static BrasaVivaCRUD crud = new BrasaVivaCRUD();
+    private static AreaAtendente areaAtendente = new AreaAtendente(crud);
+    private static AreaGerente areaGerente = new AreaGerente();
+
     public static void main(String[] args) {
+        menuInicial();
+    }
 
-        Scanner sc = new Scanner(System.in);
-        BrasaVivaCRUD crud = new BrasaVivaCRUD();
-
-        AreaAtendente areaAtendente = new AreaAtendente(crud);
-        AreaGerente areaGerente = new AreaGerente();
+    public static void menuInicial() {
 
         while (true) {
             System.out.println("\nBRASA VIVA CHURRASCARIA");

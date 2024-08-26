@@ -39,7 +39,7 @@ public class AreaAtendente {
                     cardapioUtil.visualizarCardapio();
                     break;
                 case 4:
-                    return true;
+                    Main.menuInicial();
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
             }
@@ -80,7 +80,7 @@ public class AreaAtendente {
         System.out.println("Escolha a forma de busca do cliente:");
         System.out.println("1. Buscar por CPF");
         System.out.println("2. Buscar por Nome");
-        System.out.print("Selecione uma opção: ");
+        System.out.print("\nSelecione uma opção: ");
         int opcao = sc.nextInt();
         sc.nextLine(); // Consumir a nova linha restante
 
