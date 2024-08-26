@@ -21,9 +21,6 @@ public class Pagamento {
     }
 
     public void setVenda(Venda venda) {
-        if (venda == null) {
-            throw new IllegalArgumentException("Venda não pode ser nula.");
-        }
         this.venda = venda;
     }
 
@@ -45,9 +42,5 @@ public class Pagamento {
 
     public Date getDataPagamento() {
         return dataPagamento;
-    }
-
-    public void setDataPagamento(Date dataPagamento) {
-        this.dataPagamento = dataPagamento;
     }
 }

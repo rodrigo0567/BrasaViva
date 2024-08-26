@@ -1,21 +1,20 @@
-package controller;
+package view;
 
 import dao.BrasaVivaCRUD;
 import model.*;
 import utils.Utilitarios;
-import view.AreaAtendente;
 
 import java.sql.SQLException;
 import java.util.Scanner;
 
-public class ControleVenda {
+public class InterfaceVenda {
     private final Scanner sc;
     private final Venda venda;
     private BrasaVivaCRUD crud = new BrasaVivaCRUD();
     private Utilitarios cardapioUtil = new Utilitarios(crud);
-    AreaAtendente areaAtendente = new AreaAtendente(crud);
+    InterfaceAreaAtendente areaAtendente = new InterfaceAreaAtendente(crud);
 
-    public ControleVenda(Scanner sc, BrasaVivaCRUD crud, Cliente cliente) {
+    public InterfaceVenda(Scanner sc, BrasaVivaCRUD crud, Cliente cliente) {
         this.sc = sc;
         this.crud = crud;
         this.venda = new Venda();

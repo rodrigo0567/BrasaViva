@@ -15,13 +15,13 @@ public class Utilitarios {
 
     public void visualizarCardapio() {
         List<Produto> produtos = crud.listarTodosProdutos();
-        System.out.println("\n--- Produtos Disponíveis ---\n");
+        System.out.println("\n--- Produtos Disponíveis ---");
 
         for (Produto produto : produtos) {
             Estoque estoque = crud.buscarEstoquePorProduto(produto.getId());
 
             if (estoque != null) {
-                System.out.println("ID: " + produto.getId() +
+                System.out.println("\nID: " + produto.getId() +
                         "\nNome: " + produto.getNome() +
                         "\nPreço: R$ " + String.format("%.2f", produto.getPreco()) +
                         "\nQuantidade disponível: " + estoque.getQuantidadeDisponivel() + "\n"

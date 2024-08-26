@@ -112,16 +112,11 @@ public class BrasaVivaCRUD {
         return clientesEncontrados;
     }
 
-    public void removerCliente(Long id) {
-        String sql = "DELETE FROM clientes WHERE id = ?";
+    public void removerCliente(Long id){
+        String sql = "DELETE FROM cliente WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, id);
-            int rowsDeleted = stmt.executeUpdate();
-            if (rowsDeleted > 0) {
-                System.out.println("model.Cliente removido com sucesso!");
-            } else {
-                System.out.println("Nenhum cliente encontrado com o ID especificado.");
-            }
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -204,6 +199,15 @@ public class BrasaVivaCRUD {
             System.out.println("Estoque removido com sucesso!");
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void removerEstoquePorProduto(long idProduto) throws SQLException {
+        String sql = "DELETE FROM estoque WHERE id_produto = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, idProduto);
+            stmt.executeUpdate();
         }
     }
 
@@ -315,10 +319,10 @@ public class BrasaVivaCRUD {
         }
     }
 
-    public void removerProduto(Long id) {
+    public void removerProduto(Long idProduto) throws SQLException{
         String sql = "DELETE FROM produto WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setLong(1, id);
+            stmt.setLong(1, idProduto);
             int rowsDeleted = stmt.executeUpdate();
             if (rowsDeleted > 0) {
                 System.out.println("Produto removido com sucesso!");

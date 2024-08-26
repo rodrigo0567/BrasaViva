@@ -5,7 +5,6 @@ public class VendaProduto {
     private int quantidade;
 
     public VendaProduto() {
-
     }
 
     public VendaProduto(Produto produto, int quantidade) {

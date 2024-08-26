@@ -11,8 +11,8 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         BrasaVivaCRUD crud = new BrasaVivaCRUD();
 
-        AreaAtendente areaAtendente = new AreaAtendente(crud);
-        AreaGerente areaGerente = new AreaGerente();
+        InterfaceAreaAtendente areaAtendente = new InterfaceAreaAtendente(crud);
+        InterfaceAreaGerente areaGerente = new InterfaceAreaGerente();
 
         while (true) {
             System.out.println("\nBRASA VIVA CHURRASCARIA");

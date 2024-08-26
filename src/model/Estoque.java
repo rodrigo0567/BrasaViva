@@ -16,25 +16,12 @@ public class Estoque {
         this.quantidadeDisponivel = quantidadeDisponivel;
     }
 
-    public Estoque(Long idProduto, int quantidadeDisponivel) {
-        this.id = idProduto;
-        this.quantidadeDisponivel = quantidadeDisponivel;
-    }
-
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Produto getProduto() {
         return produto;
-    }
-
-    public void setProduto(Produto produto) {
-        this.produto = produto;
     }
 
     public int getQuantidadeDisponivel() {
@@ -43,7 +30,7 @@ public class Estoque {
 
     public void setQuantidadeDisponivel(int quantidadeDisponivel) {
         this.quantidadeDisponivel = quantidadeDisponivel;
-    } // utilizado para alterar a quantida disponível da compra do cliente
+    }
 
     public void incrementarQuantidade(int quantidade) {
         this.quantidadeDisponivel += quantidade;
@@ -56,11 +43,6 @@ public class Estoque {
         } else {
             return false; // Quantidade insuficiente
         }
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Estoque{idProduto=%d, quantidadeDisponivel=%d}", id, quantidadeDisponivel);
     }
 
 }

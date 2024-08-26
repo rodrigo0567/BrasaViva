@@ -3,18 +3,17 @@ package view;
 import java.util.List;
 import dao.BrasaVivaCRUD;
 import model.Cliente;
-import controller.ControleVenda;
 import utils.Utilitarios;
 
 import java.util.Scanner;
 
-public class AreaAtendente {
+public class InterfaceAreaAtendente {
 
     private Scanner sc = new Scanner(System.in);
     private BrasaVivaCRUD crud = new BrasaVivaCRUD();
     private Utilitarios cardapioUtil = new Utilitarios(crud);
 
-    public AreaAtendente(BrasaVivaCRUD crud) {
+    public InterfaceAreaAtendente(BrasaVivaCRUD crud) {
         this.crud = crud;
     }
 
@@ -116,7 +115,7 @@ public class AreaAtendente {
             if (clientesEncontrados.size() == 1) {
                 Cliente clienteLogado = clientesEncontrados.get(0);
                 System.out.println("Cliente encontrado com sucesso!");
-                ControleVenda controleVenda = new ControleVenda(sc, crud, clienteLogado);
+                InterfaceVenda controleVenda = new InterfaceVenda(sc, crud, clienteLogado);
                 controleVenda.processarVenda();
             } else if (clientesEncontrados.isEmpty()) {
                 System.out.println("Cliente não encontrado com as informações fornecidas");
