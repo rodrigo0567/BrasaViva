@@ -133,7 +133,7 @@ public class AreaGerente {
         System.out.println("\n--- Remover Produto ---\n");
         System.out.println("1. Buscar por ID");
         System.out.println("2. Buscar por Nome");
-        System.out.print("Selecione uma opção: ");
+        System.out.print("\nSelecione uma opção: ");
         int opcao = sc.nextInt();
         sc.nextLine();
         Produto produto = null;
@@ -149,9 +149,10 @@ public class AreaGerente {
                     // Verifica se o produto existe antes de tentar remover
                     produto = crud.exibirUmProdutoPorId(idProduto);
                     if (produto == null) {
-                        System.out.println("Produto não encontrado com ID fornecido.");
+                        System.out.println("Produto não encontrado com o ID fornecido.");
+                        return; // Saia se o produto não for encontrado
                     } else {
-                        System.out.println("Produto Encontrado: " + produto.getNome());                        return;
+                        System.out.println("Produto Encontrado: " + produto.getNome());
                     }
                     break;
                 case 2:
@@ -159,11 +160,11 @@ public class AreaGerente {
                     System.out.print("Digite o Nome do Produto a ser removido: ");
                     String nomeProduto = sc.nextLine();
                     produto = crud.exibirUmProdutoPorNome(nomeProduto);
-                    if (produto != null) {
-                        System.out.println("Produto encontrado: " + produto.getNome());
-                    } else {
+                    if (produto == null) {
                         System.out.println("Produto não encontrado com o nome fornecido.");
                         return;
+                    } else {
+                        System.out.println("Produto encontrado: " + produto.getNome());
                     }
                     break;
                 default:
