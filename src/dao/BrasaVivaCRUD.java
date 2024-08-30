@@ -1,28 +1,26 @@
 package dao;
 
+import db.DB;
 import model.*;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.mysql.cj.jdbc.Driver;
+import java.sql.Connection;
 
 public class BrasaVivaCRUD {
-    private static final String LOCALHOST = "jdbc:mysql://localhost:3306/churrascaria";
-    private static final String USER = "root";
-    private static final String PASSWORD = "K22k22k4k2*";
-
-    Driver driver;
+//  conexão não é mais gerada por hardcode, verificar os dados da conexão em "db.properties"
     private Connection connection;
 
     public BrasaVivaCRUD() {
         try {
-            this.driver = new Driver();
-            DriverManager.registerDriver(driver);
-            this.connection = DriverManager.getConnection(LOCALHOST, USER, PASSWORD);
+            connection = DB.getConnection();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        if (connection == null) {
+            System.out.println("Falha ao estabelecer conexão com o banco de dados.");
         }
     }
 

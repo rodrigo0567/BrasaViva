@@ -1,6 +1,7 @@
 package view;
 
 import dao.BrasaVivaCRUD;
+
 import java.util.Scanner;
 
 public class Main {
@@ -11,7 +12,11 @@ public class Main {
     private static AreaGerente areaGerente = new AreaGerente();
 
     public static void main(String[] args) {
-        menuInicial();
+        try {
+            menuInicial();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void menuInicial() {
